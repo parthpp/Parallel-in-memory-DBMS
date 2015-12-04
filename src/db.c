@@ -7,50 +7,40 @@
 
 #include "mpi.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include "BufferCreator.h"
+#include "even.h"
 
-void get_even_process_communicator(MPI_Comm *new_communicator);
+void print_communicator_setup_confirmation();
 //MPI Variables
 int world_size;
 int my_rank;
 
+extern MPI_Comm EVEN_COMMUNICATOR;
+int my_even_communicator_rank;
+int even_communicator_world_size;
+
 int main(int argc, char *argv[]) {
-	MPI_Comm EVEN_COMMUNICATOR;
 
 	// Initiliaze MPI Environment.
 	MPI_Init(&argc, &argv);
 	MPI_Comm_size(MPI_COMM_WORLD, &world_size);
 	MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 
-	get_even_process_communicator(&EVEN_COMMUNICATOR);
+	set_even_process_communicator();
 
+	print_communicator_setup_confirmation();
 
-	printf("Process: %d: World Size: %d\n", my_rank, world_size);
 	MPI_Finalize();
 	return 0;
 }
 
-
-void get_even_process_communicator(MPI_Comm *new_communicator) {
-	int *even_process_ranks;
-	int i;
-	MPI_Group my_group;
-	MPI_Group my_added_group;
-
-
-	if(world_size % 2 != 0) {
-		fprintf("Process: %d Error: The total number of processes should be an even number.\n"
-				"The program can not continue in this state.\n"
-				"Hence Terminating", my_rank);
-		//TODO
-		//terminate_system();
+void print_communicator_setup_confirmation() {
+	if (my_even_communicator_rank == MPI_UNDEFINED) {
+		printf("Process: %d: World Size: %d\n", my_rank, world_size);
+	} else {
+		printf("Process: %d : World Size: %d : Even_Process: %d : Even_World_Size: %d\n", my_rank, world_size,
+				my_even_communicator_rank, even_communicator_world_size);
 	}
 
-	get_int_buffer(world_size/2, &even_process_ranks);
-	for (i = 0; i != (world_size - 2); i + 2) {
-		even_process_ranks[i] = i;
-	}
-
-	MPI_Comm_group(MPI_COMM_WORLD, &my_group);
-	MPI_Group_incl(my_group, (world_size/2), even_process_ranks, &my_added_group);
-	MPI_Comm_create(MPI_COMM_WORLD, my_added_group, new_communicator);
 }
