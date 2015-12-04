@@ -12,10 +12,12 @@
 
 extern int my_rank;
 extern int world_size;
+extern const int PROCESS_ZERO;
 
 MPI_Comm EVEN_COMMUNICATOR;
 int my_even_communicator_rank;
 int even_communicator_world_size;
+int my_odd_partner_rank;
 
 void set_even_process_communicator();
 void start_even_process();

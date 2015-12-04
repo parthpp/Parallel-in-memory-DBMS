@@ -55,33 +55,42 @@ void set_rank_and_world_size() {
 	if (EVEN_COMMUNICATOR == MPI_COMM_NULL) {
 		my_even_communicator_rank = MPI_UNDEFINED;
 		even_communicator_world_size = MPI_UNDEFINED;
+		my_odd_partner_rank = MPI_UNDEFINED;
 	} else {
 		MPI_Comm_size(EVEN_COMMUNICATOR, &even_communicator_world_size);
 		MPI_Comm_rank(EVEN_COMMUNICATOR, &my_even_communicator_rank);
+		my_odd_partner_rank = my_rank + 1;
 	}
 }
 
 void start_even_process() {
+	int query_id;
+	int query_tag = 0;
+	MPI_Request request;
+
 	if (my_even_communicator_rank == MPI_UNDEFINED) {
 		return;
 	}
 
-	int query_id;
+	while (1) {
+		if (my_rank == PROCESS_ZERO) {
+			//TODO
+			//get_input();
+		}
+		if (my_even_communicator_rank == 0) {
+			query_id = 10;
+		} else {
+			query_id = 20;
+		}
 
-	if (my_even_communicator_rank == 0) {
-		query_id = 10;
-	} else {
-		query_id = 20;
-	}
+		MPI_Bcast(&query_id, 1, MPI_INT, PROCESS_ZERO, EVEN_COMMUNICATOR);
+		printf("Process: %d : Even_rank : %d : query id: %d\n", my_rank, my_even_communicator_rank, query_id);
+		MPI_Isend(&query_id, 1, MPI_INT, my_odd_partner_rank, query_tag, MPI_COMM_WORLD, &request);
+		MPI_Wait(&request, MPI_STATUS_IGNORE);
+		printf("Process: %d : send complete to : %d\n", my_rank, my_odd_partner_rank);
+		++query_tag;
+		//TODO refine to work when user enters zero
+		break;
 
-	MPI_Bcast(&query_id, 1, MPI_INT, 0, EVEN_COMMUNICATOR);
-	printf("Process: %d : Even_rank : %d : query id: %d\n", my_rank, my_even_communicator_rank, query_id);
-}
-
-boolean is_odd() {
-	if (my_even_communicator_rank == MPI_UNDEFINED) {
-		return true;
-	} else {
-		return false;
 	}
 }

@@ -15,6 +15,7 @@ void print_communicator_setup_confirmation();
 //MPI Variables
 int world_size;
 int my_rank;
+const int PROCESS_ZERO = 0;
 
 extern MPI_Comm EVEN_COMMUNICATOR;
 int my_even_communicator_rank;
