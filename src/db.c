@@ -31,6 +31,7 @@ int main(int argc, char *argv[]) {
 
 	print_communicator_setup_confirmation();
 
+	start_even_process();
 	MPI_Finalize();
 	return 0;
 }

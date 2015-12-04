@@ -18,5 +18,6 @@ int my_even_communicator_rank;
 int even_communicator_world_size;
 
 void set_even_process_communicator();
+void start_even_process();
 
 #endif /* EVEN_H_ */

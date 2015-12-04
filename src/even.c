@@ -60,3 +60,28 @@ void set_rank_and_world_size() {
 		MPI_Comm_rank(EVEN_COMMUNICATOR, &my_even_communicator_rank);
 	}
 }
+
+void start_even_process() {
+	if (my_even_communicator_rank == MPI_UNDEFINED) {
+		return;
+	}
+
+	int query_id;
+
+	if (my_even_communicator_rank == 0) {
+		query_id = 10;
+	} else {
+		query_id = 20;
+	}
+
+	MPI_Bcast(&query_id, 1, MPI_INT, 0, EVEN_COMMUNICATOR);
+	printf("Process: %d : Even_rank : %d : query id: %d\n", my_rank, my_even_communicator_rank, query_id);
+}
+
+boolean is_odd() {
+	if (my_even_communicator_rank == MPI_UNDEFINED) {
+		return true;
+	} else {
+		return false;
+	}
+}
