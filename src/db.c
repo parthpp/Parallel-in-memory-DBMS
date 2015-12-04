@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include "BufferCreator.h"
 #include "even.h"
+#include "odd.h"
 
 void print_communicator_setup_confirmation();
 //MPI Variables
@@ -33,6 +34,7 @@ int main(int argc, char *argv[]) {
 	print_communicator_setup_confirmation();
 
 	start_even_process();
+	start_odd_process();
 	MPI_Finalize();
 	return 0;
 }

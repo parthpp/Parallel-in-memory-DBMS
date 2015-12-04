@@ -84,10 +84,12 @@ void start_even_process() {
 		}
 
 		MPI_Bcast(&query_id, 1, MPI_INT, PROCESS_ZERO, EVEN_COMMUNICATOR);
-		printf("Process: %d : Even_rank : %d : query id: %d\n", my_rank, my_even_communicator_rank, query_id);
+		printf("Process: %d : Even_rank : %d : Received query id: %d\n", my_rank, my_even_communicator_rank, query_id);
+
+		query_id += my_rank;
 		MPI_Isend(&query_id, 1, MPI_INT, my_odd_partner_rank, query_tag, MPI_COMM_WORLD, &request);
 		MPI_Wait(&request, MPI_STATUS_IGNORE);
-		printf("Process: %d : send complete to : %d\n", my_rank, my_odd_partner_rank);
+		printf("Process: %d : sended :%d: to its odd partner : %d\n", my_rank, query_id, my_odd_partner_rank);
 		++query_tag;
 		//TODO refine to work when user enters zero
 		break;
