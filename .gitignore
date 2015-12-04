@@ -10,3 +10,4 @@ CVS/
 /.ptp-sync
 *.0
 Tiny_Parallel_DB
+Debug/
