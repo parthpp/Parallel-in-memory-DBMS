@@ -9,21 +9,8 @@
 #include "Query.h"
 
 void create_MPI_Type_for_query() {
-	get_MPI_Type_for_date_range();
+	get_MPI_Type_for_date_range(&date_range_type);
 	get_MPI_Type_for_query();
-}
-
-void get_MPI_Type_for_date_range() {
-	const int count = 3;
-	int array_of_block_lengths[] = {1,1,1};
-	MPI_Aint offsets[count];
-	MPI_Datatype types[] = {MPI_INT, MPI_INT, MPI_INT};
-	offsets[0] = offsetof(Date, year);
-	offsets[1] = offsetof(Date, month);
-	offsets[2] = offsetof(Date, day);
-
-	MPI_Type_create_struct(count, array_of_block_lengths, offsets, types, &date_range_type);
-	MPI_Type_commit(&date_range_type);
 }
 
 

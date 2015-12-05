@@ -9,12 +9,8 @@
 #define QUERY_H_
 
 #include "mpi.h"
+#include "Date.h"
 
-typedef struct {
-	int year;
-	int month;
-	int day;
-} Date;
 
 typedef struct {
 	int query_id;
@@ -27,7 +23,7 @@ MPI_Datatype date_range_type;
 MPI_Datatype query_type;
 
 void create_MPI_Type_for_query();
-void get_MPI_Type_for_date_range();
+
 void get_MPI_Type_for_query();
 
 //TODO free mpi type for query
