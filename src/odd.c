@@ -7,14 +7,14 @@
 
 
 #include "odd.h"
+#include "Query.h"
 #include <stdio.h>
 
 void start_odd_process() {
 
 	//TODO This is temporary
 	my_even_partner_rank = my_rank - 1;
-
-	int query_id;
+	Query user_query;
 	MPI_Request request;
 	int query_tag = 0;
 	int flag = 0;
@@ -24,7 +24,7 @@ void start_odd_process() {
 	}
 
 
-	MPI_Irecv(&query_id, 1, MPI_INT, my_even_partner_rank, query_tag, MPI_COMM_WORLD, &request);
+	MPI_Irecv(&user_query, 1, query_type, my_even_partner_rank, query_tag, MPI_COMM_WORLD, &request);
 	while(1) {
 		//TODO Data processing
 		MPI_Test(&request, &flag, &status);
@@ -33,7 +33,7 @@ void start_odd_process() {
 		}
 	}
 
-	printf("Process: %d: Received: %d: from its partner: %d\n", my_rank, query_id, my_even_partner_rank);
+	printf("Process: %d: Received : query id: %d :end month: %d: from its partner: %d\n",
+			my_rank, user_query.query_id, user_query.end_date.month, my_even_partner_rank);
 	++query_tag;
-
 }

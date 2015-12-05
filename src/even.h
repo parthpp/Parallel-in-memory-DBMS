@@ -9,6 +9,8 @@
 #define EVEN_H_
 
 #include "mpi.h"
+#include "Query.h"
+#include "Menu.h"
 
 extern int my_rank;
 extern int world_size;

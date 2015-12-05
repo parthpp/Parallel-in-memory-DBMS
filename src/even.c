@@ -64,32 +64,42 @@ void set_rank_and_world_size() {
 }
 
 void start_even_process() {
-	int query_id;
-	int query_tag = 0;
-	MPI_Request request;
+	Query user_query;
 
+
+	MPI_Request request;
+	int query_tag = 0;
 	if (my_even_communicator_rank == MPI_UNDEFINED) {
 		return;
 	}
 
 	while (1) {
 		if (my_rank == PROCESS_ZERO) {
+			user_query.query_id = 2;
+			user_query.start_date.year = 2013;
+			user_query.start_date.month = 12;
+			user_query.start_date.day = 18;
+			user_query.end_date.year = 2015;
+			user_query.end_date.month = 12;
+			user_query.end_date.day = 17;
+			int query_tag = 0;
 			//TODO
-			//get_input();
-		}
-		if (my_even_communicator_rank == 0) {
-			query_id = 10;
-		} else {
-			query_id = 20;
+			//Query new_query;
+			//get_input(&new_query);
 		}
 
-		MPI_Bcast(&query_id, 1, MPI_INT, PROCESS_ZERO, EVEN_COMMUNICATOR);
-		printf("Process: %d : Even_rank : %d : Received query id: %d\n", my_rank, my_even_communicator_rank, query_id);
+		printf("Process: %d : Even_rank : %d : Before query id: %d: End date: %d\n",
+						my_rank, my_even_communicator_rank, user_query.query_id, user_query.end_date.day);
 
-		query_id += my_rank;
-		MPI_Isend(&query_id, 1, MPI_INT, my_odd_partner_rank, query_tag, MPI_COMM_WORLD, &request);
+		MPI_Bcast(&user_query, 1, query_type, PROCESS_ZERO, EVEN_COMMUNICATOR);
+		printf("Process: %d : Even_rank : %d : Received query id: %d: End date: %d\n",
+				my_rank, my_even_communicator_rank, user_query.query_id, user_query.end_date.day);
+
+		user_query.query_id += my_rank;
+		MPI_Isend(&user_query, 1, query_type, my_odd_partner_rank, query_tag, MPI_COMM_WORLD, &request);
 		MPI_Wait(&request, MPI_STATUS_IGNORE);
-		printf("Process: %d : sended :%d: to its odd partner : %d\n", my_rank, query_id, my_odd_partner_rank);
+		printf("Process: %d : sended end month:%d: to its odd partner : %d\n", my_rank, user_query.end_date.month,
+				my_odd_partner_rank);
 		++query_tag;
 		//TODO refine to work when user enters zero
 		break;

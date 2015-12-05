@@ -26,9 +26,9 @@ typedef struct {
 MPI_Datatype date_range_type;
 MPI_Datatype query_type;
 
-void create_MPI_type_for_query();
-void get_MPI_Type_for_date_range(MPI_Datatype *date_range_type);
-void get_MPI_Type_for_query(MPI_Datatype *query_type);
+void create_MPI_Type_for_query();
+void get_MPI_Type_for_date_range();
+void get_MPI_Type_for_query();
 
 //TODO free mpi type for query
 //void free_MPI_Type_for_query();
