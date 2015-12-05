@@ -12,12 +12,19 @@
 #include <unistd.h>
 #include <signal.h>
 
+void set_odd_process_structures() {
+	my_even_partner_rank = my_rank - 1;
+	read_pending = 0;
+	if (signal(SIGALRM, signal_handler) == SIG_ERR) {
+		fprintf(stderr, "A signal handler could not be binded for SIGALRM at Process: %d\nThe program shall now terminate\n", my_rank);
+		//TODO Terminate program
+	}
+}
+
 void start_odd_process() {
 
 	//TODO This is temporary
-	my_even_partner_rank = my_rank - 1;
-	read_pending = 0;
-	signal(SIGALRM, signal_handler);
+
 
 	Query user_query;
 	MPI_Request request;
@@ -29,6 +36,7 @@ void start_odd_process() {
 		return;
 	}
 
+	set_odd_process_structures();
 
 	MPI_Irecv(&user_query, 1, query_type, my_even_partner_rank, query_tag, MPI_COMM_WORLD, &request);
 	alarm(5);
