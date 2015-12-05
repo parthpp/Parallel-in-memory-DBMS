@@ -19,6 +19,8 @@ void set_odd_process_structures() {
 		fprintf(stderr, "A signal handler could not be binded for SIGALRM at Process: %d\nThe program shall now terminate\n", my_rank);
 		//TODO Terminate program
 	}
+
+	get_MPI_Type_for_query(&query_type);
 }
 
 void start_odd_process() {
@@ -54,7 +56,7 @@ void start_odd_process() {
 	}
 
 	printf("Process: %d: Received : query id: %d :end month: %d: from its partner: %d\n",
-			my_rank, user_query.query_id, user_query.end_date.month, my_even_partner_rank);
+			my_rank, user_query.query_id, user_query.end_month, my_even_partner_rank);
 	++query_tag;
 }
 

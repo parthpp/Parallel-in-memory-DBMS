@@ -8,17 +8,21 @@
 #ifndef RECORD_H_
 #define RECORD_H_
 
-#include "Date.h"
-#include "CString.h"
-
 typedef struct {
 	unsigned int sales_id;
-	Date date;
+
+	int year;
+	int month;
+	int day;
 
 	unsigned int company_id;
-	CString company_name;
+
+	char * company_name;
+	unsigned int company_name_length;
 
 	float sales_total;
+
+	unsigned short deleted;
 }Record;
 
 #endif /* RECORD_H_ */

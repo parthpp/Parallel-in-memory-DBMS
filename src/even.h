@@ -21,6 +21,8 @@ int my_even_communicator_rank;
 int even_communicator_world_size;
 int my_odd_partner_rank;
 
+MPI_Datatype query_type;
+
 void set_even_process_communicator();
 void start_even_process();
 

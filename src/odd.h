@@ -18,6 +18,7 @@ extern int my_even_communicator_rank;
 
 int my_even_partner_rank;
 volatile sig_atomic_t read_pending;
+MPI_Datatype query_type;
 
 void set_odd_process_structures();
 void start_odd_process();

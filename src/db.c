@@ -31,7 +31,6 @@ int main(int argc, char *argv[]) {
 	MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 
 	set_even_process_communicator();
-	create_MPI_Type_for_query();
 	print_communicator_setup_confirmation();
 
 	start_even_process();
