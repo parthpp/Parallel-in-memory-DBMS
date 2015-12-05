@@ -16,8 +16,10 @@ extern const int PROCESS_ZERO;
 extern int my_even_communicator_rank;
 
 int my_even_partner_rank;
+int read_pending;
 
 void start_odd_process();
+void signal_handler(int read_signal);
 
 
 

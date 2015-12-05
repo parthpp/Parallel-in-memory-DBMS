@@ -88,8 +88,8 @@ void start_even_process() {
 			//get_input(&new_query);
 		}
 
-		printf("Process: %d : Even_rank : %d : Before query id: %d: End date: %d\n",
-						my_rank, my_even_communicator_rank, user_query.query_id, user_query.end_date.day);
+//		printf("Process: %d : Even_rank : %d : Before query id: %d: End date: %d\n",
+//						my_rank, my_even_communicator_rank, user_query.query_id, user_query.end_date.day);
 
 		MPI_Bcast(&user_query, 1, query_type, PROCESS_ZERO, EVEN_COMMUNICATOR);
 		printf("Process: %d : Even_rank : %d : Received query id: %d: End date: %d\n",
