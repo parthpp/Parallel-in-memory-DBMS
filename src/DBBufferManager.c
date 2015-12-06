@@ -19,8 +19,8 @@ void get_record_buffer(int no_of_elements, Record **new_buffer) {
 	}
 
 }
-void expand_buffer(int no_of_elements, Record **buffer_begin, Record **buffer_current) {
-	int new_no_of_elements = no_of_elements * 2;
+void expand_buffer(int *no_of_elements, int * no_of_empty_space, Record **buffer_begin, Record **buffer_current) {
+	int new_no_of_elements = (*no_of_elements) * 2;
 	int i;
 	Record *old_buffer_iterator = *buffer_begin;
 	Record *new_buffer_iterator;
@@ -35,6 +35,8 @@ void expand_buffer(int no_of_elements, Record **buffer_begin, Record **buffer_cu
 		++new_buffer_iterator;
 	}
 	*buffer_current = new_buffer_iterator;
+	*no_of_elements = new_no_of_elements;
+	*no_of_empty_space = new_no_of_elements/2;
 	free(temp);
 }
 
