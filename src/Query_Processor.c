@@ -36,26 +36,34 @@ void sale_by_date(Query *query) {
 	get_sale_by_date_result(INITIAL_RESULT_SIZE, &result_begin, &result_current);
 
 	for (i = 0; i != used_buffer_size; ++i) {
+
+		// First expand the buffer if it is empty
 		if (used_result_buffer_size == result_buffer_size) {
 			expand_sale_by_date_result_buffer(&result_buffer_size, &result_begin, &result_current);
 		}
 
-		if ((data_buffer_begin[i].year >= query -> start_year)  &&
-				(data_buffer_begin[i].month >= query -> start_month) &&
-				(data_buffer_begin[i].day >= query -> start_day) ) {
+		// Check that the record is not deleted
+		if (data_buffer_begin[i].deleted != 1) {
 
-			if ((data_buffer_begin[i].year <= query -> end_year)  &&
-							(data_buffer_begin[i].month <= query -> end_month) &&
-							(data_buffer_begin[i].day <= query -> end_day) ) {
+			// Check for start date
+			if ((data_buffer_begin[i].year >= query -> start_year)  &&
+							(data_buffer_begin[i].month >= query -> start_month) &&
+							(data_buffer_begin[i].day >= query -> start_day) ) {
 
-				// ENter the data to result buffer
-				result_current -> year = data_buffer_begin[i].year;
-				result_current -> month = data_buffer_begin[i].month;
-				result_current -> day = data_buffer_begin[i].day;
+				// Check for end date
+						if ((data_buffer_begin[i].year <= query -> end_year)  &&
+										(data_buffer_begin[i].month <= query -> end_month) &&
+										(data_buffer_begin[i].day <= query -> end_day) ) {
 
-				// Update data variables related to the buffer
-				++result_current;
-				++used_result_buffer_size;
+							// ENter the data to result buffer
+							result_current -> year = data_buffer_begin[i].year;
+							result_current -> month = data_buffer_begin[i].month;
+							result_current -> day = data_buffer_begin[i].day;
+
+							// Update data variables related to the buffer
+							++result_current;
+							++used_result_buffer_size;
+						}
 			}
 		}
 	}
