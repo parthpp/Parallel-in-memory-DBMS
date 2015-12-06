@@ -20,26 +20,24 @@ void get_record_buffer(int no_of_elements, Record **new_buffer) {
 
 }
 void expand_buffer(int *no_of_elements, Record **buffer_begin, Record **buffer_current) {
+	// New buffer will be double the size of the previous one
 	int new_no_of_elements = (*no_of_elements) * 2;
+
+	// Create a new buffer, and assign buffer_begin to point to the new buffer
+	// realloc will copy the values form the old buffer to the new buffer and return the starting address of the new buffer on success
 	*buffer_begin = (Record *)realloc(*buffer_begin, (new_no_of_elements * sizeof(Record)));
+
+	// Check if the buffer was successfully created or not
+	if (*buffer_begin == NULL) {
+		fprintf(stderr, "Buffer Creation error at process: %d\nSystem will now terminate\n", my_rank);
+		//TODO
+				//terminate_system();
+	}
+
+	// Assign current buffer_current to point to the next empty slot where the next value can be stored.
 	*buffer_current = ((*buffer_begin) + (*no_of_elements));
 
-//	int i;
-//	Record *old_buffer_iterator = *buffer_begin;
-//	Record *new_buffer_iterator;
-//	Record *temp = *buffer_begin;
-//
-//	get_record_buffer(new_no_of_elements, buffer_begin);
-//
-//	new_buffer_iterator = *buffer_begin;
-//	for (i = 0; i != *no_of_elements; ++i) {
-//		*new_buffer_iterator = *old_buffer_iterator;
-//		++old_buffer_iterator;
-//		++new_buffer_iterator;
-//	}
-//	*buffer_current = new_buffer_iterator;
+	// Change the size of the buffer to be according to the new buffer
 	*no_of_elements = new_no_of_elements;
-	//*no_of_used_space = new_no_of_elements/2;
-	//free(temp);
 }
 

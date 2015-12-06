@@ -9,20 +9,20 @@
 #define RECORD_H_
 
 typedef struct {
-	unsigned int sales_id;
+	unsigned long sales_id;
 
-	int year;
-	int month;
-	int day;
+	short unsigned int year;
+	short unsigned int month;
+	short unsigned int day;
 
-	unsigned int company_id;
+	unsigned long company_id;
 
 	char * company_name;
-	unsigned int company_name_length;
+	short unsigned int company_name_length;
 
-	float sales_total;
+	double sales_total;
 
-	unsigned short deleted;
+	short unsigned int deleted;
 }Record;
 
 #endif /* RECORD_H_ */
