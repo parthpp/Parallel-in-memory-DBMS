@@ -13,5 +13,5 @@
 extern int my_rank;
 
 void get_record_buffer(int size, Record **new_buffer);
-void expand_buffer(int *no_of_elements, int *no_of_empty_space, Record **buffer_begin, Record **buffer_current);
+void expand_buffer(int *no_of_elements, Record **buffer_begin, Record **buffer_current);
 #endif /* DBBUFFERMANAGER_H_ */

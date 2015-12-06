@@ -9,6 +9,7 @@
 #include <string.h>
 #include <stdio.h>
 
+//const char * delim = '|';
 void dummy_table();
 void set_up_file_connector(int my_rank);
 void set_up_data_driver(int record_read_value) {
@@ -18,7 +19,7 @@ void set_up_data_driver(int record_read_value) {
 
 	get_record_buffer(data_buffer_size, &data_buffer_begin);
 	data_buffer_current = data_buffer_begin;
-	empty_buffer_size = data_buffer_size;
+	used_buffer_size = 0;
 }
 
 void set_up_file_connector(int my_rank) {
@@ -53,8 +54,8 @@ void insert_data() {
 		for (i = 0; i != record_count_per_read; ++i) {
 			if (end != 0) {
 
-				if (empty_buffer_size == 0) {
-					expand_buffer(&data_buffer_size, &empty_buffer_size,
+				if (used_buffer_size == data_buffer_size) {
+					expand_buffer(&data_buffer_size,
 							&data_buffer_begin, &data_buffer_current);
 					printf("Process: %d: Expanded Buffer to : %d\n", my_rank, data_buffer_size);
 				}
@@ -63,10 +64,33 @@ void insert_data() {
 				++data_buffer_current;
 				++in_dummy_table;
 				--end;
-				--empty_buffer_size;
+				++used_buffer_size;
 			} else {
 				printf("Process: %d: Read Complete", my_rank);
 				break;
 			}
 		}
 }
+
+//void split_string(char * record_string, char (*record_tokens)[5]) {
+//	char *token, *save_ptr;
+//	int i = 0;
+//	token = strtok_r(record_string, delim, &save_ptr);
+//	while (token != NULL) {
+//		record_tokens[i] = strdup(token);
+//		token = strtok_r(NULL, delim, &save_ptr);
+//		++i;
+//	}
+//}
+//
+//void get_record(char *record_token, Record *record) {
+//	unsigned long sales_id = strtol(record_token[0],NULL, 10);
+//	unsigned int year = strtol(record_token[1], NULL, 10);
+//	unsigned int month = strtol(record_token[2], NULL, 10);
+//	unsigned int day = strtol(record_token[3], NULL, 10);
+//	unsigned long company_id = strtol(record_token[4], 10);
+//	char * company_name = record_token[5];
+//	unsigned int company_name_size = strlen(record_token);
+//	unsigned short deleted = 0;
+//}
+

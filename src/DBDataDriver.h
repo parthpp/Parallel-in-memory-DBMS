@@ -16,7 +16,7 @@ extern int my_rank;
 int data_buffer_size;
 Record * data_buffer_begin;
 Record * data_buffer_current;
-int empty_buffer_size;
+int used_buffer_size;
 
 Record *in_dummy_table;
 int end;
