@@ -14,13 +14,13 @@
 typedef struct {
 	int query_id;
 
-	int start_year;
-	int start_month;
-	int start_day;
+	short unsigned int start_year;
+	short unsigned int start_month;
+	short unsigned int start_day;
 
-	int end_year;
-	int end_month;
-	int end_day;
+	short unsigned int end_year;
+	short unsigned int end_month;
+	short unsigned int end_day;
 } Query;
 
 
