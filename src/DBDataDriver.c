@@ -7,6 +7,7 @@
 
 #include "DBDataDriver.h"
 #include <string.h>
+#include <stdio.h>
 
 void dummy_table();
 void set_up_file_connector(int my_rank);
@@ -37,7 +38,7 @@ void dummy_table() {
 	for (i = 0; i != file_size; ++i) {
 		dummy_table_iterator-> sales_id = i;
 		dummy_table_iterator -> year = i + 1;
-		dummy_table_iterator -> month = i + 2;
+		dummy_table_iterator -> month = i + my_rank;
 		dummy_table_iterator -> company_id = i + 3;
 		dummy_table_iterator -> company_name = "data";
 		dummy_table_iterator -> company_name_length = i +strlen(dummy_table_iterator -> company_name);
@@ -52,16 +53,19 @@ void insert_data() {
 		for (i = 0; i != record_count_per_read; ++i) {
 			if (end != 0) {
 
-				if (empty_buffer_size != 0) {
+				if (empty_buffer_size == 0) {
 					expand_buffer(&data_buffer_size, &empty_buffer_size,
 							&data_buffer_begin, &data_buffer_current);
+					printf("Process: %d: Expanded Buffer to : %d\n", my_rank, data_buffer_size);
 				}
 				*data_buffer_current = *in_dummy_table;
+				printf("Process: %d: Record: %d: Round id: %d: value: %d\n", my_rank, end, i, data_buffer_current -> month);
 				++data_buffer_current;
 				++in_dummy_table;
 				--end;
 				--empty_buffer_size;
 			} else {
+				printf("Process: %d: Read Complete", my_rank);
 				break;
 			}
 		}

@@ -29,7 +29,7 @@ void expand_buffer(int *no_of_elements, int * no_of_empty_space, Record **buffer
 	get_record_buffer(new_no_of_elements, buffer_begin);
 
 	new_buffer_iterator = *buffer_begin;
-	for (i = 0; i != no_of_elements; ++i) {
+	for (i = 0; i != *no_of_elements; ++i) {
 		*new_buffer_iterator = *old_buffer_iterator;
 		++old_buffer_iterator;
 		++new_buffer_iterator;

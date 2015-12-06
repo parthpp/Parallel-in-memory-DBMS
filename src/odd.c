@@ -8,11 +8,13 @@
 
 #include "odd.h"
 #include "Query.h"
+#include "DBDataDriver.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <signal.h>
 
 void set_odd_process_structures() {
+	int read_per_round = 2;
 	my_even_partner_rank = my_rank - 1;
 	read_pending = 0;
 	if (signal(SIGALRM, signal_handler) == SIG_ERR) {
@@ -21,6 +23,8 @@ void set_odd_process_structures() {
 	}
 
 	get_MPI_Type_for_query(&query_type);
+
+	set_up_data_driver(read_per_round);
 }
 
 void start_odd_process() {
@@ -41,15 +45,15 @@ void start_odd_process() {
 	set_odd_process_structures();
 
 	MPI_Irecv(&user_query, 1, query_type, my_even_partner_rank, query_tag, MPI_COMM_WORLD, &request);
-	alarm(5);
-	while(j != 5) {
+	alarm(2);
+	while(j != 6) {
 		//TODO Data processing
 
 		if (!flag) {
 			MPI_Test(&request, &flag, &status);
 		}
 		if (read_pending) {
-			printf("Process : %d: Read Pending: %d", my_rank, j);
+			insert_data();
 			read_pending = 0;
 			++j;
 		}
@@ -62,5 +66,5 @@ void start_odd_process() {
 
 void signal_handler(int read_signal) {
 	read_pending = 1;
-	alarm(5);
+	alarm(2);
 }
