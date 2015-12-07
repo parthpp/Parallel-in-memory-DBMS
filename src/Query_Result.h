@@ -40,4 +40,5 @@ void collapse_company_sale_result_buffer(int new_no_of_elements, company_sale_re
 
 
 void get_company_sale_result_MPI_Type(MPI_Datatype * company_sale_result_type);
+void get_sale_by_date_result_MPI_Type(MPI_Datatype * sale_by_date_result_type);
 #endif /* QUERY_RESULT_H_ */

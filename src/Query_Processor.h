@@ -25,6 +25,11 @@ void process_query(Query *query);
 
 //TODO For testing
 void print_company_name(company_sale_result * result_begin, int used_temp_buffer_size);
+void print_sale(sale_by_date_result * result_begin, int used_temp_buffer_size);
+
+int compare_dates(short unsigned int lhs_year, short unsigned int lhs_month, short unsigned int lhs_day,
+		short unsigned int rhs_year, short unsigned int rhs_month, short unsigned int rhs_day);
+
 
 
 #endif /* QUERY_PROCESSOR_H_ */

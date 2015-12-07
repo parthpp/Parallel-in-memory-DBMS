@@ -9,6 +9,10 @@
 #include "Date_Helper.h"
 #include <time.h>
 
+static int days_list[2][12] = {{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31},
+		{31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}};
+
+
 int days_between_dates(int start_year, int start_month, int start_day,
 		int end_year, int end_month, int end_day) {
 	--start_month;		// Index for algorithm starts at index 0.
@@ -55,22 +59,19 @@ int days_between_dates(int start_year, int start_month, int start_day,
 	}
 }
 
-void add_days_to_date(int year, int month, int day, int number_of_days,
-		int *new_year, int *new_month, int * new_day) {
+void add_days_to_date(int *year, int *month, int *day, int number_of_days) {
 	struct tm t ={};
 	time_t rawtime;
-	t.tm_year = year - 1900;
-	t.tm_mon  = month - 1;
-	t.tm_mday = day;
+	t.tm_year = *year - 1900;
+	t.tm_mon  = *month - 1;
+	t.tm_mday = *day;
 
 	t.tm_mday += number_of_days;
 	rawtime = mktime(&t);
 
-	*new_day = t.tm_mday;
-	*new_month = t.tm_mon + 1;
-	*new_year = t.tm_year + 1900;
-
-
+	*day = t.tm_mday;
+	*month = t.tm_mon + 1;
+	*year = t.tm_year + 1900;
 }
 
 int days_in_month(int month, int year) {
@@ -79,7 +80,7 @@ int days_in_month(int month, int year) {
 	if (month < 0 || month > 11)
 		return -1;
 
-	return days[leap][month];
+	return days_list[leap][month];
 }
 
 int is_leap(int year) {

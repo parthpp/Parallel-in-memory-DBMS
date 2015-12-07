@@ -106,3 +106,19 @@ void get_company_sale_result_MPI_Type(MPI_Datatype * company_sale_result_type) {
 	MPI_Type_create_struct(count, array_of_block_lengths, offsets, types, company_sale_result_type);
 	MPI_Type_commit(company_sale_result_type);
 }
+
+void get_sale_by_date_result_MPI_Type(MPI_Datatype * sale_by_date_result_type) {
+	const int count = 4;
+	int array_of_block_lengths[] = {1,1,1,1};
+	MPI_Aint offsets[count];
+	MPI_Datatype types[] = {MPI_UNSIGNED_SHORT, MPI_UNSIGNED_SHORT, MPI_UNSIGNED_SHORT, MPI_DOUBLE};
+	offsets[0] = offsetof(sale_by_date_result, year);
+
+	offsets[1] = offsetof(sale_by_date_result, month);
+	offsets[2] = offsetof(sale_by_date_result, day);
+	offsets[3] = offsetof(sale_by_date_result, sales_total);
+
+	MPI_Type_create_struct(count, array_of_block_lengths, offsets, types, sale_by_date_result_type);
+	MPI_Type_commit(sale_by_date_result_type);
+
+}
