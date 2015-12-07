@@ -20,7 +20,7 @@ int compare_dates(short unsigned int lhs_year, short unsigned int lhs_month, sho
 		short unsigned int rhs_year, short unsigned int rhs_month, short unsigned int rhs_day);
 
 void process_query(Query * query) {
-
+	INITIAL_RESULT_SIZE = 1;
 	if (query -> query_id == 1) {
 		company_sale();
 	} else if (query -> query_id == 2) {

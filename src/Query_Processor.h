@@ -19,7 +19,7 @@ extern Record * data_buffer_current;		// Pointer the next empty location in the 
 extern int used_buffer_size;				// number of elements in the buffer
 extern int my_rank;
 
-static int INITIAL_RESULT_SIZE = 1;
+int INITIAL_RESULT_SIZE;
 
 void process_query(Query *query);
 
