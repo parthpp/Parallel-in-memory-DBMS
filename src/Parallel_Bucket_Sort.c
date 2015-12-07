@@ -328,7 +328,7 @@ void get_sbd_first_larger(sale_by_date_result * my_partner_result, unsigned long
 		unsigned long mid = (low + high) / 2;
 		result = compare_dates(my_partner_result[mid].year, my_partner_result[mid].month, my_partner_result[mid].day,
 				date -> year, date -> month, date -> day);
-		if (result == 1 || result == 0) {
+		if (result == -1 || result == 0) {
 			low = mid + 1;
 		}
 		else {
@@ -359,7 +359,7 @@ void calculate_sale_by_date_split_points(Query *query, sale_by_date_result *my_p
 		split_points_sbd[i].day = day;
 	}
 	// Calculating split points for last process seperately
-	split_interval += day_diff % even_communicator_world_size;
+	split_interval += (day_diff % even_communicator_world_size)-1;
 	add_days_to_date(&year, &month, &day, split_interval);
 	split_points_sbd[i].year = year;
 	split_points_sbd[i].month = month;

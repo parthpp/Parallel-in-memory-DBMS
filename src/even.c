@@ -19,6 +19,8 @@ void process_result(Query *query);
 
 void set_rank_and_world_size();
 void process_company_sale();
+void process_sale_by_date(Query * query);
+void dummy_table_sale_by_date_result(sale_by_date_result **my_result, int *no_of_elements);
 void dummy_table_company_sale_result(company_sale_result **my_result, int *no_of_elements);
 
 
@@ -85,13 +87,13 @@ void start_even_process() {
 
 	while (1) {
 		if (my_rank == PROCESS_ZERO) {
-			user_query.query_id = 1;
-			user_query.start_year = 0;
-			user_query.start_month = 0;
-			user_query.start_day = 0;
-			user_query.end_year = 0;
-			user_query.end_month = 0;
-			user_query.end_day = 0;
+			user_query.query_id = 2;
+			user_query.start_year = 2014;
+			user_query.start_month = 1;
+			user_query.start_day = 21;
+			user_query.end_year = 2015;
+			user_query.end_month = 2;
+			user_query.end_day = 3;
 			//TODO
 			//Query new_query;
 			//get_input(&new_query);
@@ -120,15 +122,29 @@ void process_result(Query *query) {
 	if (query -> query_id == 1) {
 		process_company_sale();
 	}
-//		else if (query -> query_id == 2) {
-//		process_sale_by_date();
-//	} else if (query -> query_id == 3) {
+		else if (query -> query_id == 2) {
+		process_sale_by_date(query);
+	}
+		//else if (query -> query_id == 3) {
 //		process_delete_record();
 //	} else {
 //		process_exit();
 //	}
 }
 //
+
+void process_sale_by_date(Query * query) {
+	sale_by_date_result *sbd_result;
+	unsigned long sale_by_date_result_size;
+
+ //Assuming for the moment that the result is obtained here some how
+	sale_by_date_result * my_result;
+	int no_of_elements;
+	dummy_table_sale_by_date_result(&my_result, &no_of_elements);
+	parallel_bucket_sort_sale_by_date(*query, my_result, no_of_elements, &sbd_result, &sale_by_date_result_size);
+	//merge_total_company_sale(cs_result, company_sale_result_size, &final_result, );
+	//send_company_sale_result();
+}
 void process_company_sale() {
 	company_sale_result *cs_result;
 	unsigned long company_sale_result_size;
@@ -140,6 +156,92 @@ void process_company_sale() {
 	parallel_bucket_sort_company_sale(my_result, no_of_elements, &cs_result, &company_sale_result_size);
 	//merge_total_company_sale(cs_result, company_sale_result_size, &final_result, );
 	//send_company_sale_result();
+}
+
+void dummy_table_sale_by_date_result(sale_by_date_result **my_result, int *no_of_elements) {
+	sale_by_date_result *temp_ptr;
+
+	if (my_rank == 0) {
+		*no_of_elements = 5;
+		get_sale_by_date_result_buffer(5, my_result, &temp_ptr);
+		(*my_result)[0].year = 2014;
+		(*my_result)[0].month = 1;
+		(*my_result)[0].day = 21;
+
+		(*my_result)[0].sales_total = 21210.23;
+
+		(*my_result)[1].year = 2014;
+		(*my_result)[1].month = 7;
+		(*my_result)[1].day = 8;
+
+		(*my_result)[1].sales_total = 21210.23;
+
+		(*my_result)[2].year = 2014;
+		(*my_result)[2].month = 9;
+		(*my_result)[2].day = 21;
+
+		(*my_result)[2].sales_total = 21210.23;
+
+		(*my_result)[3].year = 2015;
+		(*my_result)[3].month = 1;
+		(*my_result)[3].day = 2;
+
+		(*my_result)[3].sales_total = 21210.23;
+
+		(*my_result)[4].year = 2015;
+		(*my_result)[4].month = 2;
+		(*my_result)[4].day = 3;
+
+		(*my_result)[4].sales_total = 21210.23;
+
+	}
+
+	if (my_rank == 2) {
+			*no_of_elements = 7;
+			get_sale_by_date_result_buffer(7, my_result, &temp_ptr);
+			(*my_result)[0].year = 2014;
+			(*my_result)[0].month = 3;
+			(*my_result)[0].day = 23;
+
+			(*my_result)[0].sales_total = 21211.23;
+
+			(*my_result)[1].year = 2014;
+			(*my_result)[1].month = 4;
+			(*my_result)[1].day = 8;
+
+			(*my_result)[1].sales_total = 21211.23;
+
+			(*my_result)[2].year = 2014;
+			(*my_result)[2].month = 5;
+			(*my_result)[2].day = 21;
+
+			(*my_result)[2].sales_total = 21211.23;
+
+			(*my_result)[3].year = 2014;
+			(*my_result)[3].month = 7;
+			(*my_result)[3].day = 2;
+
+			(*my_result)[3].sales_total = 21211.23;
+
+			(*my_result)[4].year = 2014;
+			(*my_result)[4].month = 9;
+			(*my_result)[4].day = 3;
+
+			(*my_result)[4].sales_total = 21211.23;
+
+			(*my_result)[5].year = 2014;
+			(*my_result)[5].month = 12;
+			(*my_result)[5].day = 22;
+
+			(*my_result)[5].sales_total = 21211.23;
+
+			(*my_result)[6].year = 2015;
+			(*my_result)[6].month = 1;
+			(*my_result)[6].day = 31;
+
+			(*my_result)[6].sales_total = 21211.23;
+
+		}
 }
 
 void dummy_table_company_sale_result(company_sale_result **my_result, int *no_of_elements) {
@@ -203,4 +305,11 @@ void dummy_table_company_sale_result(company_sale_result **my_result, int *no_of
 //	} else if (my_rank == 3) {
 //
 //	}
+}
+
+void merge_total_sale_by_date(sale_by_date_result *query_result, int query_result_size,
+		sale_by_date_result ** final_result, int *final_result_size) {
+	int i;
+	sale_by_date_result *final_result_current;
+	get_sale_by_date_buffer(INITIAL_MERGE_TOTAL_BUFFER_SIZE, final_result, &final_result_current);
 }

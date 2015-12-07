@@ -20,6 +20,7 @@ MPI_Comm EVEN_COMMUNICATOR;
 int my_even_communicator_rank;
 int even_communicator_world_size;
 int my_odd_partner_rank;
+int INITIAL_MERGE_TOTAL_BUFFER_SIZE;
 
 MPI_Datatype query_type;
 
