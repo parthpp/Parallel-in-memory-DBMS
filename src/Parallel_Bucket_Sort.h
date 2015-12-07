@@ -71,6 +71,8 @@ void get_sbd_first_larger(sale_by_date_result * my_partner_result, unsigned long
 
 void get_date_buffer(int size, Date **buffer);
 
+int compare_sale_by_date_result(const void * lhs, const void *rhs) ;
+
 
 
 #endif /* PARALLEL_BUCKET_SORT_H_ */

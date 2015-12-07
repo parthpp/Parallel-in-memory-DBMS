@@ -23,6 +23,9 @@ void process_sale_by_date(Query * query);
 void dummy_table_sale_by_date_result(sale_by_date_result **my_result, int *no_of_elements);
 void dummy_table_company_sale_result(company_sale_result **my_result, int *no_of_elements);
 
+void merge_total_sale_by_date(sale_by_date_result *query_result, int query_result_size,
+		sale_by_date_result ** final_result, int *final_result_size);
+
 
 void set_even_process_communicator() {
 	int *even_process_ranks;
@@ -72,6 +75,9 @@ void set_rank_and_world_size() {
 		MPI_Comm_rank(EVEN_COMMUNICATOR, &my_even_communicator_rank);
 		my_odd_partner_rank = my_rank + 1;
 	}
+
+	INITIAL_MERGE_TOTAL_BUFFER_SIZE = 1000;
+
 }
 
 void start_even_process() {
@@ -136,13 +142,15 @@ void process_result(Query *query) {
 void process_sale_by_date(Query * query) {
 	sale_by_date_result *sbd_result;
 	unsigned long sale_by_date_result_size;
+	sale_by_date_result * final_result;
+	int final_result_size;
 
  //Assuming for the moment that the result is obtained here some how
 	sale_by_date_result * my_result;
 	int no_of_elements;
 	dummy_table_sale_by_date_result(&my_result, &no_of_elements);
 	parallel_bucket_sort_sale_by_date(*query, my_result, no_of_elements, &sbd_result, &sale_by_date_result_size);
-	//merge_total_company_sale(cs_result, company_sale_result_size, &final_result, );
+	merge_total_sale_by_date(sbd_result, sale_by_date_result_size, &final_result, &final_result_size);
 	//send_company_sale_result();
 }
 void process_company_sale() {
@@ -206,13 +214,13 @@ void dummy_table_sale_by_date_result(sale_by_date_result **my_result, int *no_of
 			(*my_result)[0].sales_total = 21211.23;
 
 			(*my_result)[1].year = 2014;
-			(*my_result)[1].month = 4;
+			(*my_result)[1].month = 7;
 			(*my_result)[1].day = 8;
 
 			(*my_result)[1].sales_total = 21211.23;
 
 			(*my_result)[2].year = 2014;
-			(*my_result)[2].month = 5;
+			(*my_result)[2].month = 9;
 			(*my_result)[2].day = 21;
 
 			(*my_result)[2].sales_total = 21211.23;
@@ -310,6 +318,43 @@ void dummy_table_company_sale_result(company_sale_result **my_result, int *no_of
 void merge_total_sale_by_date(sale_by_date_result *query_result, int query_result_size,
 		sale_by_date_result ** final_result, int *final_result_size) {
 	int i;
+	int result;
+	int no_of_elements = INITIAL_MERGE_TOTAL_BUFFER_SIZE;
+	int used_final_result_space = 0;
 	sale_by_date_result *final_result_current;
-	get_sale_by_date_buffer(INITIAL_MERGE_TOTAL_BUFFER_SIZE, final_result, &final_result_current);
+
+	if (query_result_size == 0) {
+		return;
+	}
+
+	get_sale_by_date_result_buffer(INITIAL_MERGE_TOTAL_BUFFER_SIZE, final_result, &final_result_current);
+
+
+	final_result_current = *final_result;
+
+	// Used_final_result_space points to the last element in the buffer
+	final_result_current[used_final_result_space] = query_result[0];
+
+	for (i = 1; i != query_result_size; ++i) {
+		result = compare_sale_by_date_result(&(final_result_current[used_final_result_space]), &(query_result[i]));
+		if (result == 0) {
+			final_result_current[used_final_result_space].sales_total += query_result[i].sales_total;
+		} else {
+			if ((used_final_result_space + 1) == no_of_elements) {
+				expand_sale_by_date_result_buffer(&no_of_elements, final_result, &final_result_current);
+			}
+			++ used_final_result_space;
+			final_result_current[used_final_result_space] = query_result[i];
+		}
+	}
+
+	++used_final_result_space;		// Increment after the last element entered in the loop
+	collapse_sale_by_date_result_buffer(used_final_result_space, final_result);
+
+	*final_result_size = used_final_result_space;
+	if (my_rank == 0) {
+
+		print_sale(*final_result, used_final_result_space);
+	}
+
 }
