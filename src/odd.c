@@ -46,22 +46,28 @@ void start_odd_process() {
 	set_odd_process_structures();
 
 	MPI_Irecv(&user_query, 1, query_type, my_even_partner_rank, query_tag, MPI_COMM_WORLD, &request);
-	alarm(2);
+	//alarm(2);
 	while(j != 6) {
 		//TODO Data processing
 
 		if (!flag) {
 			MPI_Test(&request, &flag, &status);
+		} else {
+			//TODO important remove
+
+			break;
 		}
 		if (read_pending) {
 			insert_data();
 			read_pending = 0;
 			++j;
 		}
+
+
 	}
 
-	printf("Process: %d: Received : query id: %d :end month: %d: from its partner: %d\n",
-			my_rank, user_query.query_id, user_query.end_month, my_even_partner_rank);
+	printf("Process: %d: Received : query id: %d : from its partner: %d\n",
+			my_rank, user_query.query_id, my_even_partner_rank);
 	++query_tag;
 }
 

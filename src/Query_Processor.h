@@ -23,4 +23,8 @@ int INITIAL_RESULT_SIZE;
 
 void process_query(Query *query);
 
+//TODO For testing
+void print_company_name(company_sale_result * result_begin, int used_temp_buffer_size);
+
+
 #endif /* QUERY_PROCESSOR_H_ */

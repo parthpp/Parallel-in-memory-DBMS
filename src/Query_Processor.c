@@ -172,11 +172,12 @@ void print_sale(sale_by_date_result * result_begin, int used_temp_buffer_size) {
 }
 
 void print_company_name(company_sale_result * result_begin, int used_temp_buffer_size) {
+	//printf("Process: %d\n", my_rank);
 	printf("\nCompany Sale Result\n");
 	printf("Company Name  Total\n");
 	int i;
 	for (i = 0; i != used_temp_buffer_size; ++i) {
-		printf("%d %s %f\n", result_begin[i].company_id, result_begin[i].company_name, result_begin[i].sales_total);
+		printf("%d %d %s %f\n", my_rank, result_begin[i].company_id, result_begin[i].company_name, result_begin[i].sales_total);
 	}
 }
 

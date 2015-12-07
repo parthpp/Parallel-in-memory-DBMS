@@ -10,8 +10,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "Query_Result.h"
+#include "Parallel_Bucket_Sort.h"
+
+//TODO For testing
+#include "Query_Processor.h"
+#include <string.h>
+void process_result(Query *query);
 
 void set_rank_and_world_size();
+void process_company_sale();
+void dummy_table_company_sale_result(company_sale_result **my_result, int *no_of_elements);
 
 
 void set_even_process_communicator() {
@@ -77,13 +85,13 @@ void start_even_process() {
 
 	while (1) {
 		if (my_rank == PROCESS_ZERO) {
-			user_query.query_id = 2;
-			user_query.start_year = 2013;
-			user_query.start_month = 12;
-			user_query.start_day = 18;
-			user_query.end_year = 2015;
-			user_query.end_month = 12;
-			user_query.end_day = 17;
+			user_query.query_id = 1;
+			user_query.start_year = 0;
+			user_query.start_month = 0;
+			user_query.start_day = 0;
+			user_query.end_year = 0;
+			user_query.end_month = 0;
+			user_query.end_day = 0;
 			//TODO
 			//Query new_query;
 			//get_input(&new_query);
@@ -93,40 +101,106 @@ void start_even_process() {
 //						my_rank, my_even_communicator_rank, user_query.query_id, user_query.end_date.day);
 
 		MPI_Bcast(&user_query, 1, query_type, PROCESS_ZERO, EVEN_COMMUNICATOR);
-		printf("Process: %d : Even_rank : %d : Received query id: %d: End date: %d\n",
-				my_rank, my_even_communicator_rank, user_query.query_id, user_query.end_day);
+		printf("Process: %d : Even_rank : %d : Received query id: %d:",
+				my_rank, my_even_communicator_rank, user_query.query_id);
 
-		user_query.query_id += my_rank;
 		MPI_Isend(&user_query, 1, query_type, my_odd_partner_rank, query_tag, MPI_COMM_WORLD, &request);
 		MPI_Wait(&request, MPI_STATUS_IGNORE);
-		printf("Process: %d : sended end month:%d: to its odd partner : %d\n", my_rank, user_query.end_month,
+		printf("Process: %d : sended query_id:%d: to its odd partner : %d\n", my_rank, user_query.query_id,
 				my_odd_partner_rank);
 		++query_tag;
+		process_result(&user_query);
 		//TODO refine to work when user enters zero
 		break;
 
 	}
 }
 
-//void process_result(Query *query) {
-//	if (query -> query_id == 1) {
-//		process_company_sale();
-//	} else if (query -> query_id == 2) {
+void process_result(Query *query) {
+	if (query -> query_id == 1) {
+		process_company_sale();
+	}
+//		else if (query -> query_id == 2) {
 //		process_sale_by_date();
 //	} else if (query -> query_id == 3) {
 //		process_delete_record();
 //	} else {
 //		process_exit();
 //	}
-//}
+}
 //
-//void process_company_sale() {
-//	company_sale_result *cs_result;
-//	unsigned long company_sale_result_size;
+void process_company_sale() {
+	company_sale_result *cs_result;
+	unsigned long company_sale_result_size;
 
-// Assuming for the moment that the result is obtained here some how
-// comapny_sale_result * my_result;
-//	parallel_bucket_sort_company_sale(my_result, &cs_result, &company_sale_result_size);
-//	merge_total_company_sale(cs_result, company_sale_result_size);
-//	send_company_sale_result();
-//}
+ //Assuming for the moment that the result is obtained here some how
+	company_sale_result * my_result;
+	int no_of_elements;
+	dummy_table_company_sale_result(&my_result, &no_of_elements);
+	parallel_bucket_sort_company_sale(my_result, no_of_elements, &cs_result, &company_sale_result_size);
+	//merge_total_company_sale(cs_result, company_sale_result_size, &final_result, );
+	//send_company_sale_result();
+}
+
+void dummy_table_company_sale_result(company_sale_result **my_result, int *no_of_elements) {
+	company_sale_result *temp_ptr;
+	if (my_rank == 0) {
+		*no_of_elements = 5;
+		get_company_sale_result_buffer(5, my_result, &temp_ptr);
+		(*my_result)[0].company_id = 1;
+		strcpy((*my_result)[0].company_name, "ABCp0");
+		(*my_result)[0].sales_total = 50000.34;
+
+		(*my_result)[1].company_id = 3;
+		strcpy((*my_result)[1].company_name, "HIJp0");
+		(*my_result)[1].sales_total = 62000.34;
+
+		(*my_result)[2].company_id = 1;
+		strcpy((*my_result)[2].company_name, "ABCp0");
+		(*my_result)[2].sales_total = 50000.34;
+
+		(*my_result)[3].company_id = 2;
+		strcpy((*my_result)[3].company_name, "DEFp0");
+		(*my_result)[3].sales_total = 52000.34;
+
+		(*my_result)[4].company_id = 4;
+		strcpy((*my_result)[4].company_name, "KLMp0");
+		(*my_result)[4].sales_total = 72000.34;
+	} else if (my_rank == 2) {
+		*no_of_elements = 7;
+		get_company_sale_result_buffer(7, my_result, &temp_ptr);
+		(*my_result)[0].company_id = 1;
+		strcpy((*my_result)[0].company_name, "ABCp2");
+		(*my_result)[0].sales_total = 50000.34;
+
+		(*my_result)[1].company_id = 4;
+		strcpy((*my_result)[1].company_name, "ABCp2");
+		(*my_result)[1].sales_total = 62000.34;
+
+		(*my_result)[2].company_id = 2;
+		strcpy((*my_result)[2].company_name, "ABCp2");
+		(*my_result)[2].sales_total = 50000.34;
+
+		(*my_result)[3].company_id = 3;
+		strcpy((*my_result)[3].company_name, "ABCp2");
+		(*my_result)[3].sales_total = 52000.34;
+
+		(*my_result)[4].company_id = 4;
+		strcpy((*my_result)[4].company_name, "ABCp2");
+		(*my_result)[4].sales_total = 72000.34;
+
+		(*my_result)[5].company_id = 2;
+		strcpy((*my_result)[5].company_name, "ABCp2");
+		(*my_result)[5].sales_total = 72000.34;
+
+		(*my_result)[6].company_id = 5;
+		strcpy((*my_result)[6].company_name, "ABCp2");
+		(*my_result)[6].sales_total = 72000.34;
+
+	}
+//	} else if (my_rank == 2) {
+//
+//	} else if (my_rank == 3) {
+//
+//	}
+}

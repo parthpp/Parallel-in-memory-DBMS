@@ -14,9 +14,11 @@ void get_company_sale_result_buffer(int no_of_elements, company_sale_result **bu
 	*buffer = (company_sale_result *) malloc(no_of_elements * sizeof(company_sale_result));
 	if (*buffer == NULL && (no_of_elements != 0)) {
 		fprintf(stderr, "A buffer creation process failed at : process: %d\n", my_rank);
-	} else {
-		*buffer_current = *buffer;
 	}
+	//TODO important removr
+//	else {
+//		*buffer_current = *buffer;
+//	}
 
 	printf("Current Buffer Size for company sale: %d\n", no_of_elements);
 }
@@ -95,7 +97,7 @@ void get_company_sale_result_MPI_Type(MPI_Datatype * company_sale_result_type) {
 	const int count = 3;
 	int array_of_block_lengths[] = {1,100,1};
 	MPI_Aint offsets[count];
-	MPI_Datatype types[] = {MPI_UNSIGNED_SHORT, MPI_CHAR, MPI_DOUBLE};
+	MPI_Datatype types[] = {MPI_UNSIGNED_LONG, MPI_CHAR, MPI_DOUBLE};
 	offsets[0] = offsetof(company_sale_result, company_id);
 
 	offsets[1] = offsetof(company_sale_result, company_name);
