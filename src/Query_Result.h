@@ -8,7 +8,7 @@
 #ifndef QUERY_RESULT_H_
 #define QUERY_RESULT_H_
 
-extern my_rank;		// USed while printing error messgaes, if error occurs.
+extern int my_rank;		// USed while printing error messgaes, if error occurs.
 typedef struct {
 	char company_name[100];
 	double sales_total;
@@ -31,5 +31,8 @@ void expand_company_sale_result_buffer(int *no_of_elements, company_sale_result 
 void get_sale_by_date_result_buffer(int no_of_elements, sale_by_date_result **buffer, sale_by_date_result **buffer_current);
 void expand_sale_by_date_result_buffer(int *no_of_elements, sale_by_date_result **buffer_begin,
 		sale_by_date_result ** buffer_current);
+
+void collapse_sale_by_date_result_buffer(int new_no_of_elements, sale_by_date_result **buffer_begin);
+void collapse_company_sale_result_buffer(int new_no_of_elements, company_sale_result **buffer_begin);
 
 #endif /* QUERY_RESULT_H_ */

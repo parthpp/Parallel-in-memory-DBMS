@@ -13,7 +13,8 @@ void get_MPI_Type_for_query(MPI_Datatype * query_type) {
 	const int count = 7;
 	int array_of_block_lengths[] = {1,1,1,1,1,1,1};
 	MPI_Aint offsets[count];
-	MPI_Datatype types[] = {MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_INT};
+	MPI_Datatype types[] = {MPI_INT, MPI_UNSIGNED_SHORT, MPI_UNSIGNED_SHORT,
+			MPI_UNSIGNED_SHORT, MPI_UNSIGNED_SHORT, MPI_UNSIGNED_SHORT, MPI_UNSIGNED_SHORT};
 	offsets[0] = offsetof(Query, query_id);
 
 	offsets[1] = offsetof(Query, start_year);

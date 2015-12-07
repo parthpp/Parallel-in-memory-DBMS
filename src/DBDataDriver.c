@@ -10,6 +10,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+//TODO These headers are for testing only
+#include "Query.h"
+#include "Query_Processor.h"
+
 void dummy_table();
 void set_up_file_connector(int my_rank);
 void split_string(char * record_string, char **record_tokens);
@@ -36,22 +40,25 @@ void set_up_file_connector(int my_rank) {
 // Creates and inserts dummy values
 void dummy_table() {
 	in_dummy_table = (char **)malloc(sizeof(char*) * end);
-	in_dummy_table[0] = "12|2014|12|2|1111|Ganga|22.20";
-	in_dummy_table[1] = "12|2014|12|2|1111|Ganga|22.21";
-	in_dummy_table[2] = "12|2014|12|2|1111|Ganga|22.22";
-	in_dummy_table[3] = "12|2014|12|2|1111|Ganga|22.23";
-	in_dummy_table[4] = "12|2014|12|2|1111|Ganga|22.24";
-	in_dummy_table[5] = "12|2014|12|2|1111|Ganga|22.25";
-	in_dummy_table[6] = "12|2014|12|2|1111|Ganga|22.26";
-	in_dummy_table[7] = "12|2014|12|2|1111|Ganga|22.27";
-	in_dummy_table[8] = "12|2014|12|2|1111|Ganga|22.28";
-	in_dummy_table[9] = "12|2014|12|2|1111|Ganga|22.29";
+	in_dummy_table[0] = "12000|2013|12|17|1111|Ganga|22.20";
+	in_dummy_table[1] = "12001|2014|1|2|1111|Ganga|22.21";
+	in_dummy_table[2] = "12002|2014|2|2|1111|Ganga|22.22";
+	in_dummy_table[3] = "12003|2014|5|8|1111|Ganga|22.23";
+	in_dummy_table[4] = "12004|2015|1|10|1111|Ganga|22.24";
+	in_dummy_table[5] = "12005|2015|8|6|1111|Ganga|22.25";
+	in_dummy_table[6] = "12006|2015|8|31|1111|Ganga|22.26";
+	in_dummy_table[7] = "12007|2015|9|26|1111|Ganga|22.27";
+	in_dummy_table[8] = "12008|2015|11|2|1111|Ganga|22.28";
+	in_dummy_table[9] = "12009|2015|12|17|1111|Ganga|22.29";
 
 }
 
 // Main Insert method- This is the method called by odd process when it is time to read more data fromm file
 void insert_data() {
 	int i;
+	Query company_sale;
+	Query sale_by_date;
+	Query deleted;
 	char * record_tokens[7];
 
 		for (i = 0; i != record_count_per_read; ++i) {
@@ -81,6 +88,41 @@ void insert_data() {
 			// If reading is complete then break form the loop and simply return
 			else {
 				printf("Process: %d: Read Complete", my_rank);
+				if (my_rank == 3) {
+					company_sale.query_id = 1;
+					process_query(&company_sale);
+
+					sale_by_date.query_id = 2;
+					sale_by_date.start_year = 2013;
+					sale_by_date.start_month = 12;
+					sale_by_date.start_day = 17;
+					sale_by_date.end_year = 2015;
+					sale_by_date.end_month = 8;
+					sale_by_date.end_day = 31;
+					process_query(&sale_by_date);
+
+					deleted.query_id = 3;
+					deleted.start_year = 2013;
+					deleted.start_month = 12;
+					deleted.start_day = 17;
+					deleted.end_year = 2015;
+					deleted.end_month = 8;
+					deleted.end_day = 31;
+					process_query(&deleted);
+
+					company_sale.query_id = 1;
+					process_query(&company_sale);
+
+					sale_by_date.query_id = 2;
+					sale_by_date.start_year = 2013;
+					sale_by_date.start_month = 12;
+					sale_by_date.start_day = 17;
+					sale_by_date.end_year = 2015;
+					sale_by_date.end_month = 8;
+					sale_by_date.end_day = 31;
+					process_query(&sale_by_date);
+
+				}
 				break;
 			}
 		}
@@ -112,13 +154,15 @@ void split_string(char * record_string, char **record_tokens) {
 // NOte: This method assumes the format of the data present in the string to be according to the specification of the project
 // It is assumed that all the record fields will have some value. I.e null values are not considered or handled.
 void get_record(char **record_token, Record * record) {
-	record -> sales_id = strtol(record_token[0],NULL, 10);
+	record -> sales_id = strtoul(record_token[0],NULL, 10);
+
+	//TODO COnversion is through long
 	record -> year = strtol(record_token[1], NULL, 10);
 	record -> month = strtol(record_token[2], NULL, 10);
 	record -> day = strtol(record_token[3], NULL, 10);
-	record -> company_id = strtol(record_token[4], NULL,10);
-	record -> company_name = record_token[5];
-	record -> company_name_length = strlen(record_token[5]);
+	record -> company_id = strtoul(record_token[4], NULL,10);
+
+	strcpy(record -> company_name, record_token[5]);
 	record -> sales_total = strtod(record_token[6], NULL);
 	record ->  deleted = 0;
 }

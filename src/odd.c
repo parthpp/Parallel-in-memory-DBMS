@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <signal.h>
+#include "Query_Processor.h"
 
 void set_odd_process_structures() {
 	int read_per_round = 2;

@@ -17,8 +17,7 @@ typedef struct {
 
 	unsigned long company_id;
 
-	char * company_name;
-	short unsigned int company_name_length;
+	char company_name[100];
 
 	double sales_total;
 
