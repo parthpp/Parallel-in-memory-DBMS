@@ -8,6 +8,8 @@
 #ifndef QUERY_RESULT_H_
 #define QUERY_RESULT_H_
 
+#include "mpi.h"
+
 extern int my_rank;		// USed while printing error messgaes, if error occurs.
 typedef struct {
 	unsigned long company_id;
@@ -36,4 +38,6 @@ void expand_sale_by_date_result_buffer(int *no_of_elements, sale_by_date_result 
 void collapse_sale_by_date_result_buffer(int new_no_of_elements, sale_by_date_result **buffer_begin);
 void collapse_company_sale_result_buffer(int new_no_of_elements, company_sale_result **buffer_begin);
 
+
+void get_company_sale_result_MPI_Type(MPI_Datatype * company_sale_result_type);
 #endif /* QUERY_RESULT_H_ */

@@ -90,3 +90,17 @@ void collapse_company_sale_result_buffer(int new_no_of_elements, company_sale_re
 	printf("Buffer for company sale collapsed to %d", new_no_of_elements);
 
 }
+
+void get_company_sale_result_MPI_Type(MPI_Datatype * company_sale_result_type) {
+	const int count = 3;
+	int array_of_block_lengths[] = {1,100,1};
+	MPI_Aint offsets[count];
+	MPI_Datatype types[] = {MPI_UNSIGNED_SHORT, MPI_CHAR, MPI_DOUBLE};
+	offsets[0] = offsetof(company_sale_result, company_id);
+
+	offsets[1] = offsetof(company_sale_result, company_name);
+	offsets[2] = offsetof(company_sale_result, sales_total);
+
+	MPI_Type_create_struct(count, array_of_block_lengths, offsets, types, company_sale_result_type);
+	MPI_Type_commit(company_sale_result_type);
+}
