@@ -9,6 +9,7 @@
 #include "BufferCreator.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "Query_Result.h"
 
 void set_rank_and_world_size();
 
@@ -106,3 +107,24 @@ void start_even_process() {
 
 	}
 }
+
+//void process_result(Query *query) {
+//	if (query -> query_id == 1) {
+//		process_company_sale();
+//	} else if (query -> query_id == 2) {
+//		process_sale_by_date();
+//	} else if (query -> query_id == 3) {
+//		process_delete_record();
+//	} else {
+//		process_exit();
+//	}
+//}
+//
+//void process_company_sale() {
+//	company_sale_result *cs_result;
+//	unsigned long company_sale_result_size;
+//
+//	parallel_bucket_sort_company_sale(&cs_result, &company_sale_result_size);
+//	merge_total_company_sale(cs_result, company_sale_result_size);
+//	send_company_sale_result();
+//}

@@ -10,6 +10,7 @@
 
 extern int my_rank;		// USed while printing error messgaes, if error occurs.
 typedef struct {
+	unsigned long company_id;
 	char company_name[100];
 	double sales_total;
 } company_sale_result;

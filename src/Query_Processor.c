@@ -148,6 +148,8 @@ void company_sale() {
 			strcpy(result_current -> company_name, data_buffer_begin[i].company_name);
 			result_current -> sales_total = data_buffer_begin[i].sales_total;
 
+			result_current -> company_id = data_buffer_begin[i].company_id;
+
 			// Update data variables related to the buffer
 			++result_current;
 			++used_result_buffer_size;
@@ -174,7 +176,7 @@ void print_company_name(company_sale_result * result_begin, int used_temp_buffer
 	printf("Company Name  Total\n");
 	int i;
 	for (i = 0; i != used_temp_buffer_size; ++i) {
-		printf("%s %f\n", result_begin[i].company_name, result_begin[i].sales_total);
+		printf("%d %s %f\n", result_begin[i].company_id, result_begin[i].company_name, result_begin[i].sales_total);
 	}
 }
 
