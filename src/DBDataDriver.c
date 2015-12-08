@@ -44,8 +44,6 @@ void set_up_file_connector() {
 	RAW_DATA_BUFFER_SIZE = 1000;
 	//dummy_table();
 	get_file_details();
-
-
 }
 
 // Creates and inserts dummy values
@@ -67,9 +65,9 @@ void set_up_file_connector() {
 // Main Insert method- This is the method called by odd process when it is time to read more data fromm file
 void insert_data() {
 	int i;
-	Query company_sale;
-	Query sale_by_date;
-	Query deleted;
+//	Query company_sale;
+	//Query sale_by_date;
+	//Query deleted;
 	char * record_tokens[7];
 	char *record_string;
 
@@ -82,7 +80,7 @@ void insert_data() {
 					// This function will reset the values of its arguments according to the new buffer
 					expand_buffer(&data_buffer_size,
 							&data_buffer_begin, &data_buffer_current);
-					printf("Process: %d: Expanded Buffer to : %d\n", my_rank, data_buffer_size);
+					//printf("Process: %d: Expanded Buffer to : %d\n", my_rank, data_buffer_size);
 				}
 				// Insert values
 				read_record(&record_string);
@@ -101,42 +99,7 @@ void insert_data() {
 			}
 			// If reading is complete then break form the loop and simply return
 			else {
-				printf("Process: %d: Read Complete", my_rank);
-				if (my_rank == 3) {
-					company_sale.query_id = 1;
-					process_query(&company_sale);
 
-					sale_by_date.query_id = 2;
-					sale_by_date.start_year = 2013;
-					sale_by_date.start_month = 12;
-					sale_by_date.start_day = 17;
-					sale_by_date.end_year = 2015;
-					sale_by_date.end_month = 8;
-					sale_by_date.end_day = 31;
-					process_query(&sale_by_date);
-
-					deleted.query_id = 3;
-					deleted.start_year = 2013;
-					deleted.start_month = 12;
-					deleted.start_day = 17;
-					deleted.end_year = 2015;
-					deleted.end_month = 8;
-					deleted.end_day = 31;
-					process_query(&deleted);
-
-					company_sale.query_id = 1;
-					process_query(&company_sale);
-
-					sale_by_date.query_id = 2;
-					sale_by_date.start_year = 2013;
-					sale_by_date.start_month = 12;
-					sale_by_date.start_day = 17;
-					sale_by_date.end_year = 2015;
-					sale_by_date.end_month = 8;
-					sale_by_date.end_day = 31;
-					process_query(&sale_by_date);
-
-				}
 				break;
 			}
 		}
@@ -185,8 +148,14 @@ void get_file_details() {
 	struct stat file_structure;
 	int error_check ;
 	errno = 0;
+	int file_index;
+	if (my_even_partner_rank > 0) {
+		file_index = my_even_partner_rank - 1;
+	} else {
+		file_index = 0;
+	}
 
-	file_handler = fopen(file_names[my_even_partner_rank], "rb");
+	file_handler = fopen(file_names[file_index], "rb");
 
 	if (file_handler == NULL) {
 		fprintf(stderr, "Process: %d : An error happened while attempting to open the file %s : "
@@ -205,6 +174,7 @@ void read_record(char **record_string){
 	int length;
 	fgets(raw_data, RAW_DATA_BUFFER_SIZE, file_handler);
 	if (feof(file_handler)) {
+		printf("Reached End\n");
 		end = 1;
 	}
 

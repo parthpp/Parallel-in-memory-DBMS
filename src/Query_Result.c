@@ -43,7 +43,7 @@ void expand_company_sale_result_buffer(int *no_of_elements, company_sale_result 
 void get_sale_by_date_result_buffer(int no_of_elements, sale_by_date_result **buffer, sale_by_date_result **buffer_current) {
 	*buffer = (sale_by_date_result *) malloc(no_of_elements * sizeof(sale_by_date_result));
 	if (*buffer == NULL && (no_of_elements != 0)) {
-		fprintf(stderr, "A buffer creation process failed at : process: %d\n", my_rank);
+		fprintf(stderr, "A sale by date buffer creation process failed at : process: %d of size : %d\n", my_rank, no_of_elements);
 	} else {
 		*buffer_current = *buffer;
 	}

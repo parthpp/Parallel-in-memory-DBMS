@@ -11,6 +11,7 @@
 #include "Query.h"
 #include "Query_Result.h"
 #include "Record.h"
+#include "Shared_Memory.h"
 
 // Buffer related variables
 extern int data_buffer_size;				// Size of Current Buffer
@@ -18,6 +19,7 @@ extern Record * data_buffer_begin;			// POinter to the beigining i.e the first e
 extern Record * data_buffer_current;		// Pointer the next empty location in the buffer(i.e place where next element will go)
 extern int used_buffer_size;				// number of elements in the buffer
 extern int my_rank;
+extern int my_even_partner_rank;
 
 int INITIAL_RESULT_SIZE;
 

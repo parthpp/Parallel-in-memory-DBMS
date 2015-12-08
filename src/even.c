@@ -11,15 +11,16 @@
 #include <stdlib.h>
 #include "Query_Result.h"
 #include "Parallel_Bucket_Sort.h"
+#include "Shared_Memory.h"
 
 //TODO For testing
 #include "Query_Processor.h"
 #include <string.h>
-void process_result(Query *query);
 
+void process_result(Query *query, int result_size);
 void set_rank_and_world_size();
 void process_company_sale();
-void process_sale_by_date(Query * query);
+void process_sale_by_date(Query * query, int result_size);
 void dummy_table_sale_by_date_result(sale_by_date_result **my_result, int *no_of_elements);
 void dummy_table_company_sale_result(company_sale_result **my_result, int *no_of_elements);
 
@@ -87,51 +88,36 @@ void start_even_process() {
 
 	Query user_query;
 	MPI_Request request;
+	int result_size;
 
-	int query_tag = 0;
 	if (my_even_communicator_rank == MPI_UNDEFINED) {
 		return;
 	}
 
 	while (1) {
 		if (my_rank == PROCESS_ZERO) {
-			user_query.query_id = 2;
-			user_query.start_year = 2014;
-			user_query.start_month = 1;
-			user_query.start_day = 21;
-			user_query.end_year = 2015;
-			user_query.end_month = 2;
-			user_query.end_day = 3;
-			//TODO
-			//Query new_query;
-			//get_input(&new_query);
+			get_input(&user_query);
 		}
 
-//		printf("Process: %d : Even_rank : %d : Before query id: %d: End date: %d\n",
-//						my_rank, my_even_communicator_rank, user_query.query_id, user_query.end_date.day);
-
 		MPI_Bcast(&user_query, 1, query_type, PROCESS_ZERO, EVEN_COMMUNICATOR);
-		printf("Process: %d : Even_rank : %d : Received query id: %d:",
-				my_rank, my_even_communicator_rank, user_query.query_id);
 
-		MPI_Isend(&user_query, 1, query_type, my_odd_partner_rank, query_tag, MPI_COMM_WORLD, &request);
+		MPI_Isend(&user_query, 1, query_type, my_odd_partner_rank, 0, MPI_COMM_WORLD, &request);
 		MPI_Wait(&request, MPI_STATUS_IGNORE);
-		printf("Process: %d : sended query_id:%d: to its odd partner : %d\n", my_rank, user_query.query_id,
-				my_odd_partner_rank);
-		++query_tag;
-		process_result(&user_query);
-		//TODO refine to work when user enters zero
-		break;
 
+		MPI_Irecv(&result_size, 1, MPI_INT, my_odd_partner_rank, 0, MPI_COMM_WORLD, &request);
+		MPI_Wait(&request, MPI_STATUS_IGNORE);
+		printf("Process: %d, Heard from client", my_rank);
+
+		process_result(&user_query, result_size);
 	}
 }
 
-void process_result(Query *query) {
+void process_result(Query *query, int result_size) {
 	if (query -> query_id == 1) {
 		process_company_sale();
 	}
 		else if (query -> query_id == 2) {
-		process_sale_by_date(query);
+		process_sale_by_date(query, result_size);
 	}
 		//else if (query -> query_id == 3) {
 //		process_delete_record();
@@ -141,26 +127,39 @@ void process_result(Query *query) {
 }
 //
 
-void process_sale_by_date(Query * query) {
+void process_sale_by_date(Query * query, int result_size) {
+	// Sorted result
 	sale_by_date_result *sbd_result;
 	unsigned long sale_by_date_result_size;
+
+	// Final merged result
 	sale_by_date_result * final_result;
 	int final_result_size;
+
+	// Result to be printed. Relevant only at PZERO
 	sale_by_date_result *print_data;
 	int print_data_size;
 
- //Assuming for the moment that the result is obtained here some how
+	// Result obtained from odd partner
 	sale_by_date_result * my_result;
-	int no_of_elements;
-	dummy_table_sale_by_date_result(&my_result, &no_of_elements);
+	int no_of_elements = result_size;
+	sale_by_date_result *temp_ptr;
+
+	get_sale_by_date_result_buffer(result_size, &my_result, &temp_ptr);
+
+	receive_sbd_from_sm(my_result, result_size);
+
 	parallel_bucket_sort_sale_by_date(*query, my_result, no_of_elements, &sbd_result, &sale_by_date_result_size);
+
 	merge_total_sale_by_date(sbd_result, sale_by_date_result_size, &final_result, &final_result_size);
+
 	send_sale_by_date_result_to_pzero(final_result, final_result_size, &print_data, &print_data_size);
 
 	if (my_rank == 0) {
 		print_sale(print_data, print_data_size);
 	}
 }
+
 void process_company_sale() {
 	company_sale_result *cs_result;
 	unsigned long company_sale_result_size;

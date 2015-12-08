@@ -40,6 +40,8 @@ void sale_by_date(Query *query) {
 	sale_by_date_result *result_current;
 	int compare_result;
 
+	MPI_Request request;
+
 	int i;
 	get_sale_by_date_result_buffer(INITIAL_RESULT_SIZE, &result_begin, &result_current);
 
@@ -82,8 +84,11 @@ void sale_by_date(Query *query) {
 	}
 
 	collapse_sale_by_date_result_buffer(used_result_buffer_size, &result_begin);
+	send_sbd_result(result_begin, used_result_buffer_size);
 
-	print_sale(result_begin, used_result_buffer_size);
+	MPI_Isend(&used_result_buffer_size, 1, MPI_INT, my_even_partner_rank, 0, MPI_COMM_WORLD, &request);
+	MPI_Wait(&request, MPI_STATUS_IGNORE);
+//	print_sale(result_begin, used_result_buffer_size);
 }
 
 void delete_record(Query * query) {

@@ -35,7 +35,6 @@ void start_odd_process() {
 
 	Query user_query;
 	MPI_Request request;
-	int query_tag = 0;
 	int flag = 0;
 	MPI_Status status;
 	if (my_even_communicator_rank != MPI_UNDEFINED) {
@@ -47,32 +46,34 @@ void start_odd_process() {
 	//TODO Enter User Argument here
 	//set_up_data_driver(100);
 
-	MPI_Irecv(&user_query, 1, query_type, my_even_partner_rank, query_tag, MPI_COMM_WORLD, &request);
 	alarm(1);
+	MPI_Irecv(&user_query, 1, query_type, my_even_partner_rank, 0, MPI_COMM_WORLD, &request);
+
 	while(1) {
 		//TODO Data processing
 
 		if (!flag) {
 			MPI_Test(&request, &flag, &status);
+		} else {
+			printf("Received Query ID: %d\n", user_query.query_id);
+			process_query(&user_query);
+			MPI_Irecv(&user_query, 1, query_type, my_even_partner_rank, 0, MPI_COMM_WORLD, &request);
+			flag = 0;
 		}
-		// TODO Remove IMportant
-		else {
-			break;
-		}
+//		// TODO Remove IMportant
+//		else {
+//			break;
+//		}
 		if (read_pending) {
 			insert_data();
 			read_pending = 0;
 		}
 	}
-
-	printf("Process: %d: Received : query id: %d : from its partner: %d\n",
-			my_rank, user_query.query_id, my_even_partner_rank);
-	++query_tag;
 }
 
 void signal_handler(int read_signal) {
 	read_pending = 1;
 
 	//TODO Important Remove the commment from alarm
-	//alarm(2);
+	alarm(2);
 }
