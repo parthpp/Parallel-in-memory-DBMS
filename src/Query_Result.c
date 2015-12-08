@@ -15,10 +15,9 @@ void get_company_sale_result_buffer(int no_of_elements, company_sale_result **bu
 	if (*buffer == NULL && (no_of_elements != 0)) {
 		fprintf(stderr, "A buffer creation process failed at : process: %d\n", my_rank);
 	}
-	//TODO important removr
-//	else {
-//		*buffer_current = *buffer;
-//	}
+	else {
+		*buffer_current = *buffer;
+	}
 
 	printf("Current Buffer Size for company sale: %d\n", no_of_elements);
 }

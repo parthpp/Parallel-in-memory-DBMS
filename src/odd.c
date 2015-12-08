@@ -15,7 +15,7 @@
 #include "Query_Processor.h"
 
 void set_odd_process_structures() {
-	int read_per_round = 2;
+	int read_per_round = 1000;
 	my_even_partner_rank = my_rank - 1;
 	read_pending = 0;
 	if (signal(SIGALRM, signal_handler) == SIG_ERR) {
@@ -37,7 +37,6 @@ void start_odd_process() {
 	MPI_Request request;
 	int query_tag = 0;
 	int flag = 0;
-	int j = 0;
 	MPI_Status status;
 	if (my_even_communicator_rank != MPI_UNDEFINED) {
 		return;
@@ -45,25 +44,21 @@ void start_odd_process() {
 
 	set_odd_process_structures();
 
+	//TODO Enter User Argument here
+	//set_up_data_driver(100);
+
 	MPI_Irecv(&user_query, 1, query_type, my_even_partner_rank, query_tag, MPI_COMM_WORLD, &request);
-	//alarm(2);
-	while(j != 6) {
+	alarm(1);
+	while(1) {
 		//TODO Data processing
 
 		if (!flag) {
 			MPI_Test(&request, &flag, &status);
-		} else {
-			//TODO important remove
-
-			break;
 		}
 		if (read_pending) {
 			insert_data();
 			read_pending = 0;
-			++j;
 		}
-
-
 	}
 
 	printf("Process: %d: Received : query id: %d : from its partner: %d\n",

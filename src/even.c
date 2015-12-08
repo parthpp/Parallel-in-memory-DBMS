@@ -358,3 +358,47 @@ void merge_total_sale_by_date(sale_by_date_result *query_result, int query_resul
 	}
 
 }
+
+void merge_total_company_sale(company_sale_result *query_result, int query_result_size,
+		company_sale_result  **final_result, int *final_result_size ) {
+	int i;
+	int result;
+	int no_of_elements = INITIAL_MERGE_TOTAL_BUFFER_SIZE;
+	int used_final_result_space = 0;
+	company_sale_result *final_result_current;
+
+	if (query_result_size == 0) {
+		return;
+	}
+
+	get_sale_by_date_result_buffer(INITIAL_MERGE_TOTAL_BUFFER_SIZE, final_result, &final_result_current);
+
+
+	final_result_current = *final_result;
+
+	// Used_final_result_space points to the last element in the buffer
+	final_result_current[used_final_result_space] = query_result[0];
+
+	for (i = 1; i != query_result_size; ++i) {
+		result = compare_sale_by_date_result(&(final_result_current[used_final_result_space]), &(query_result[i]));
+		if (result == 0) {
+			final_result_current[used_final_result_space].sales_total += query_result[i].sales_total;
+		} else {
+			if ((used_final_result_space + 1) == no_of_elements) {
+				expand_sale_by_date_result_buffer(&no_of_elements, final_result, &final_result_current);
+			}
+			++ used_final_result_space;
+			final_result_current[used_final_result_space] = query_result[i];
+		}
+	}
+
+	++used_final_result_space;		// Increment after the last element entered in the loop
+	collapse_sale_by_date_result_buffer(used_final_result_space, final_result);
+
+	*final_result_size = used_final_result_space;
+	if (my_rank == 0) {
+
+		print_sale(*final_result, used_final_result_space);
+	}
+
+}

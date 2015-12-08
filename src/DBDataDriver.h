@@ -10,6 +10,7 @@
 
 #include "DBBufferManager.h"
 #include "Record.h"
+#include <stdio.h>
 
 extern int my_rank;
 
@@ -21,10 +22,15 @@ int used_buffer_size;				// number of elements in the buffer
 
 char * delim;						// Delimeter used while decoing the strings read from file
 
-
-// Dummy record data
-char **in_dummy_table;
+FILE *file_handler;
+int file_size;
+char raw_data[1000];
+int RAW_DATA_BUFFER_SIZE;
+extern int my_even_partner_rank;		// Needed to retrive file name
 int end;
+//// Dummy record data
+//char **in_dummy_table;
+//int end;
 
 int record_count_per_read;			// Random value generated between read_max and 10
 
