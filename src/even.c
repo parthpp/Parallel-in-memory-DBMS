@@ -19,7 +19,7 @@
 
 void process_result(Query *query, int result_size);
 void set_rank_and_world_size();
-void process_company_sale();
+void process_company_sale(int result_size);
 void process_sale_by_date(Query * query, int result_size);
 void dummy_table_sale_by_date_result(sale_by_date_result **my_result, int *no_of_elements);
 void dummy_table_company_sale_result(company_sale_result **my_result, int *no_of_elements);
@@ -114,7 +114,7 @@ void start_even_process() {
 
 void process_result(Query *query, int result_size) {
 	if (query -> query_id == 1) {
-		process_company_sale();
+		process_company_sale(result_size);
 	}
 		else if (query -> query_id == 2) {
 		process_sale_by_date(query, result_size);
@@ -160,22 +160,31 @@ void process_sale_by_date(Query * query, int result_size) {
 	}
 }
 
-void process_company_sale() {
+void process_company_sale(int result_size) {
 	company_sale_result *cs_result;
 	unsigned long company_sale_result_size;
+
 	company_sale_result *final_result;
 	int final_result_size;
 
 	company_sale_result *print_data;
 	int print_data_size;
 
- //Assuming for the moment that the result is obtained here some how
+	// Result obtained from partner
 	company_sale_result * my_result;
-	int no_of_elements;
-	dummy_table_company_sale_result(&my_result, &no_of_elements);
+	int no_of_elements = result_size;
+	company_sale_result *temp_ptr;
+
+	get_company_sale_result_buffer(result_size, &my_result, &temp_ptr);
+
+	receive_cs_from_sm(my_result, result_size);
+
 	parallel_bucket_sort_company_sale(my_result, no_of_elements, &cs_result, &company_sale_result_size);
+
 	merge_total_company_sale(cs_result, company_sale_result_size, &final_result, &final_result_size);
+
 	send_company_sale_result_to_pzero(final_result, final_result_size, &print_data, &print_data_size);
+
 	if (my_rank == 0) {
 		print_company_name(print_data, print_data_size);
 	}

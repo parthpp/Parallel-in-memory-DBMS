@@ -418,21 +418,24 @@ void send_company_sale_result_to_pzero(company_sale_result *final_result, int fi
 	// Send the size of your data to process zero
 	MPI_Gather(&final_result_size,1, MPI_INT, print_data_receive_size, 1, MPI_INT, 0, EVEN_COMMUNICATOR);
 
+	if (my_rank == 0) {
 	// Calculate total data to be received at process zero
-	*print_data_size = 0;
-	for (i = 0; i != even_communicator_world_size; ++i) {
-		*print_data_size += print_data_receive_size[i];
+		*print_data_size = 0;
+		for (i = 0; i != even_communicator_world_size; ++i) {
+			*print_data_size += print_data_receive_size[i];
+		}
+
+		// Allocate buffer
+		get_company_sale_result_buffer(*print_data_size, print_data, &temp_ptr);
+
+		get_int_buffer(even_communicator_world_size, &receive_displacement);
+
+		receive_displacement[0] = 0;
+		for (i = 1; i != even_communicator_world_size; ++i) {
+			receive_displacement[i] = receive_displacement[i-1] + print_data_receive_size[i-1];
+		}
 	}
 
-	// Allocate buffer
-	get_company_sale_result_buffer(*print_data_size, print_data, &temp_ptr);
-
-	get_int_buffer(even_communicator_world_size, &receive_displacement);
-
-	receive_displacement[0] = 0;
-	for (i = 1; i != even_communicator_world_size; ++i) {
-		receive_displacement[i] = receive_displacement[i-1] + print_data_receive_size[i-1];
-	}
 
 	MPI_Gatherv(final_result, final_result_size, csr_mpi_type, *print_data, print_data_receive_size,
 			receive_displacement, csr_mpi_type, 0, EVEN_COMMUNICATOR);

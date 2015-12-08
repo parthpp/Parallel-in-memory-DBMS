@@ -99,6 +99,8 @@ void delete_record(Query * query) {
 	int compare_result;
 	int i;
 
+	MPI_Request request;
+
 	for (i = 0; i != used_buffer_size; ++i) {
 
 		// Check that the record is not deleted as we don't want to delete the same record twice
@@ -125,7 +127,9 @@ void delete_record(Query * query) {
 		}
 	}
 
-	printf("Process: %d: Deletes Records : %d\n", my_rank, no_of_deleted_records);
+	MPI_Isend(&no_of_deleted_records, 1, MPI_INT, my_even_partner_rank, 0, MPI_COMM_WORLD, &request);
+	MPI_Wait(&request, MPI_STATUS_IGNORE);
+	//printf("Process: %d: Deletes Records : %d\n", my_rank, no_of_deleted_records);
 }
 
 
@@ -135,6 +139,8 @@ void company_sale() {
 	int used_result_buffer_size = 0;
 	company_sale_result *result_begin;
 	company_sale_result *result_current;
+
+	MPI_Request request;
 
 	int i;
 	get_company_sale_result_buffer(INITIAL_RESULT_SIZE, &result_begin, &result_current);
@@ -163,8 +169,10 @@ void company_sale() {
 	}
 
 	collapse_company_sale_result_buffer(used_result_buffer_size, &result_begin);
+	send_cs_result(result_begin, used_result_buffer_size);
 
-	print_company_name(result_begin, used_result_buffer_size);
+	MPI_Isend(&used_result_buffer_size, 1, MPI_INT, my_even_partner_rank, 0, MPI_COMM_WORLD, &request);
+	MPI_Wait(&request, MPI_STATUS_IGNORE);
 }
 
 void print_sale(sale_by_date_result * result_begin, int used_temp_buffer_size) {
