@@ -55,6 +55,10 @@ void start_odd_process() {
 		if (!flag) {
 			MPI_Test(&request, &flag, &status);
 		}
+		// TODO Remove IMportant
+		else {
+			break;
+		}
 		if (read_pending) {
 			insert_data();
 			read_pending = 0;
@@ -68,5 +72,7 @@ void start_odd_process() {
 
 void signal_handler(int read_signal) {
 	read_pending = 1;
-	alarm(2);
+
+	//TODO Important Remove the commment from alarm
+	//alarm(2);
 }

@@ -128,7 +128,7 @@ int compare_company_sale_result(const void * lhs, const void *rhs) {
 
 	if (lhs_id > rhs_id) {
 		return 1;
-	} else if (lhs_id > rhs_id) {
+	} else if (lhs_id < rhs_id) {
 		return -1;
 	} else {
 		return 0;
@@ -406,27 +406,67 @@ int compare_sale_by_date_result(const void * lhs, const void *rhs) {
 	}
 }
 
-//int compare_dates(short unsigned int lhs_year, short unsigned int lhs_month, short unsigned int lhs_day,
-//		short unsigned int rhs_year, short unsigned int rhs_month, short unsigned int rhs_day) {
-//
-//	if (rhs_year > lhs_year) {
-//		return -1;
-//	} else if (rhs_year < lhs_year) {
-//		return 1;
-//	} else {
-//		if (rhs_month > lhs_month) {
-//			return -1;
-//		} else if (rhs_month < lhs_month) {
-//			return 1;
-//		} else {
-//			if (rhs_day > lhs_day) {
-//				return -1;
-//			} else if (rhs_day < lhs_day) {
-//				return 1;
-//			} else {
-//				return 0;
-//			}
-//		}
-//	}
-//}
+void send_company_sale_result_to_pzero(company_sale_result *final_result, int final_result_size,
+		company_sale_result **print_data, int *print_data_size){
+	company_sale_result *temp_ptr = final_result;
+	int *print_data_receive_size;
+	int *receive_displacement;
+	int i;
+	// Buffer relevant only at process zero
+	get_int_buffer(even_communicator_world_size, &print_data_receive_size);
+
+	// Send the size of your data to process zero
+	MPI_Gather(&final_result_size,1, MPI_INT, print_data_receive_size, 1, MPI_INT, 0, EVEN_COMMUNICATOR);
+
+	// Calculate total data to be received at process zero
+	*print_data_size = 0;
+	for (i = 0; i != even_communicator_world_size; ++i) {
+		*print_data_size += print_data_receive_size[i];
+	}
+
+	// Allocate buffer
+	get_company_sale_result_buffer(*print_data_size, print_data, &temp_ptr);
+
+	get_int_buffer(even_communicator_world_size, &receive_displacement);
+
+	receive_displacement[0] = 0;
+	for (i = 1; i != even_communicator_world_size; ++i) {
+		receive_displacement[i] = receive_displacement[i-1] + print_data_receive_size[i-1];
+	}
+
+	MPI_Gatherv(final_result, final_result_size, csr_mpi_type, *print_data, print_data_receive_size,
+			receive_displacement, csr_mpi_type, 0, EVEN_COMMUNICATOR);
+}
+
+void send_sale_by_date_result_to_pzero(sale_by_date_result *final_result, int final_result_size,
+		sale_by_date_result **print_data, int *print_data_size) {
+	sale_by_date_result *temp_ptr = final_result;
+	int *print_data_receive_size;
+	int *receive_displacement;
+	int i;
+	// Buffer relevant only at process zero
+	get_int_buffer(even_communicator_world_size, &print_data_receive_size);
+
+	// Send the size of your data to process zero
+	MPI_Gather(&final_result_size,1, MPI_INT, print_data_receive_size, 1, MPI_INT, 0, EVEN_COMMUNICATOR);
+
+	// Calculate total data to be received at process zero
+	*print_data_size = 0;
+	for (i = 0; i != even_communicator_world_size; ++i) {
+		*print_data_size += print_data_receive_size[i];
+	}
+
+	// Allocate buffer
+	get_sale_by_date_result_buffer(*print_data_size, print_data, &temp_ptr);
+
+	get_int_buffer(even_communicator_world_size, &receive_displacement);
+
+	receive_displacement[0] = 0;
+	for (i = 1; i != even_communicator_world_size; ++i) {
+		receive_displacement[i] = receive_displacement[i-1] + print_data_receive_size[i-1];
+	}
+
+	MPI_Gatherv(final_result, final_result_size, sbd_mpi_type, *print_data, print_data_receive_size,
+			receive_displacement, sbd_mpi_type, 0, EVEN_COMMUNICATOR);
+}
 

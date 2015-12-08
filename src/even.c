@@ -25,6 +25,8 @@ void dummy_table_company_sale_result(company_sale_result **my_result, int *no_of
 
 void merge_total_sale_by_date(sale_by_date_result *query_result, int query_result_size,
 		sale_by_date_result ** final_result, int *final_result_size);
+void merge_total_company_sale(company_sale_result *query_result, int query_result_size,
+		company_sale_result  **final_result, int *final_result_size );
 
 
 void set_even_process_communicator() {
@@ -144,6 +146,8 @@ void process_sale_by_date(Query * query) {
 	unsigned long sale_by_date_result_size;
 	sale_by_date_result * final_result;
 	int final_result_size;
+	sale_by_date_result *print_data;
+	int print_data_size;
 
  //Assuming for the moment that the result is obtained here some how
 	sale_by_date_result * my_result;
@@ -151,19 +155,31 @@ void process_sale_by_date(Query * query) {
 	dummy_table_sale_by_date_result(&my_result, &no_of_elements);
 	parallel_bucket_sort_sale_by_date(*query, my_result, no_of_elements, &sbd_result, &sale_by_date_result_size);
 	merge_total_sale_by_date(sbd_result, sale_by_date_result_size, &final_result, &final_result_size);
-	//send_company_sale_result();
+	send_sale_by_date_result_to_pzero(final_result, final_result_size, &print_data, &print_data_size);
+
+	if (my_rank == 0) {
+		print_sale(print_data, print_data_size);
+	}
 }
 void process_company_sale() {
 	company_sale_result *cs_result;
 	unsigned long company_sale_result_size;
+	company_sale_result *final_result;
+	int final_result_size;
+
+	company_sale_result *print_data;
+	int print_data_size;
 
  //Assuming for the moment that the result is obtained here some how
 	company_sale_result * my_result;
 	int no_of_elements;
 	dummy_table_company_sale_result(&my_result, &no_of_elements);
 	parallel_bucket_sort_company_sale(my_result, no_of_elements, &cs_result, &company_sale_result_size);
-	//merge_total_company_sale(cs_result, company_sale_result_size, &final_result, );
-	//send_company_sale_result();
+	merge_total_company_sale(cs_result, company_sale_result_size, &final_result, &final_result_size);
+	send_company_sale_result_to_pzero(final_result, final_result_size, &print_data, &print_data_size);
+	if (my_rank == 0) {
+		print_company_name(print_data, print_data_size);
+	}
 }
 
 void dummy_table_sale_by_date_result(sale_by_date_result **my_result, int *no_of_elements) {
@@ -371,7 +387,7 @@ void merge_total_company_sale(company_sale_result *query_result, int query_resul
 		return;
 	}
 
-	get_sale_by_date_result_buffer(INITIAL_MERGE_TOTAL_BUFFER_SIZE, final_result, &final_result_current);
+	get_company_sale_result_buffer(INITIAL_MERGE_TOTAL_BUFFER_SIZE, final_result, &final_result_current);
 
 
 	final_result_current = *final_result;
@@ -380,12 +396,12 @@ void merge_total_company_sale(company_sale_result *query_result, int query_resul
 	final_result_current[used_final_result_space] = query_result[0];
 
 	for (i = 1; i != query_result_size; ++i) {
-		result = compare_sale_by_date_result(&(final_result_current[used_final_result_space]), &(query_result[i]));
+		result = compare_company_sale_result(&(final_result_current[used_final_result_space]), &(query_result[i]));
 		if (result == 0) {
 			final_result_current[used_final_result_space].sales_total += query_result[i].sales_total;
 		} else {
 			if ((used_final_result_space + 1) == no_of_elements) {
-				expand_sale_by_date_result_buffer(&no_of_elements, final_result, &final_result_current);
+				expand_company_sale_result_buffer(&no_of_elements, final_result, &final_result_current);
 			}
 			++ used_final_result_space;
 			final_result_current[used_final_result_space] = query_result[i];
@@ -393,12 +409,11 @@ void merge_total_company_sale(company_sale_result *query_result, int query_resul
 	}
 
 	++used_final_result_space;		// Increment after the last element entered in the loop
-	collapse_sale_by_date_result_buffer(used_final_result_space, final_result);
+	collapse_company_sale_result_buffer(used_final_result_space, final_result);
 
 	*final_result_size = used_final_result_space;
 	if (my_rank == 0) {
 
-		print_sale(*final_result, used_final_result_space);
+		print_company_name(*final_result, used_final_result_space);
 	}
-
 }

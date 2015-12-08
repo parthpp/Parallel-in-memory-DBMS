@@ -73,6 +73,10 @@ void get_date_buffer(int size, Date **buffer);
 
 int compare_sale_by_date_result(const void * lhs, const void *rhs) ;
 
+void send_company_sale_result_to_pzero(company_sale_result *final_result, int final_result_size,
+		company_sale_result **print_data, int *print_data_size);
 
+void send_sale_by_date_result_to_pzero(sale_by_date_result *final_result, int final_result_size,
+		sale_by_date_result **print_data, int *print_data_size);
 
 #endif /* PARALLEL_BUCKET_SORT_H_ */
