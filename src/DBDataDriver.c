@@ -80,14 +80,13 @@ void insert_data() {
 					// This function will reset the values of its arguments according to the new buffer
 					expand_buffer(&data_buffer_size,
 							&data_buffer_begin, &data_buffer_current);
-					//printf("Process: %d: Expanded Buffer to : %d\n", my_rank, data_buffer_size);
 				}
 				// Insert values
 				read_record(&record_string);
 				split_string(record_string, record_tokens);
 				get_record(record_tokens, data_buffer_current);
 				free(record_string);
-			//	fprintf(stdout,"Process: %d: Record: %d: Round id: %d: value: %f\n", my_rank, end, i, data_buffer_current -> sales_total);
+
 
 				// Increment pointers
 				++data_buffer_current;
@@ -174,7 +173,6 @@ void read_record(char **record_string){
 	int length;
 	fgets(raw_data, RAW_DATA_BUFFER_SIZE, file_handler);
 	if (feof(file_handler)) {
-		printf("Reached End\n");
 		end = 1;
 	}
 
@@ -186,4 +184,9 @@ void read_record(char **record_string){
 	}
 	*record_string = (char *)malloc((length+1) * sizeof(char));
 	strcpy(*record_string, raw_data);
+}
+
+void terminate_DB() {
+	fclose(file_handler);
+	free(data_buffer_begin);
 }

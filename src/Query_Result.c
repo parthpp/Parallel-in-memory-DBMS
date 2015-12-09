@@ -19,7 +19,6 @@ void get_company_sale_result_buffer(int no_of_elements, company_sale_result **bu
 		*buffer_current = *buffer;
 	}
 
-	printf("Current Buffer Size for company sale: %d\n", no_of_elements);
 }
 
 void expand_company_sale_result_buffer(int *no_of_elements, company_sale_result **buffer_begin,
@@ -32,7 +31,6 @@ void expand_company_sale_result_buffer(int *no_of_elements, company_sale_result 
 			//TODO
 			//terminate_system();
 	}
-	printf("Buffer for company sale Expanded from %d to %d\n", *no_of_elements, new_no_of_elements);
 
 	*buffer_current = ((*buffer_begin) + (*no_of_elements));
 	*no_of_elements = new_no_of_elements;
@@ -48,8 +46,6 @@ void get_sale_by_date_result_buffer(int no_of_elements, sale_by_date_result **bu
 		*buffer_current = *buffer;
 	}
 
-	printf("Current Buffer Size for sale by date: %d\n", no_of_elements);
-
 }
 
 void expand_sale_by_date_result_buffer(int *no_of_elements, sale_by_date_result **buffer_begin,
@@ -62,11 +58,9 @@ void expand_sale_by_date_result_buffer(int *no_of_elements, sale_by_date_result 
 			//TODO
 			//terminate_system();
 	}
-	printf("Buffer For Sale Expanded from %d to %d\n", *no_of_elements, new_no_of_elements);
 
 	*buffer_current = ((*buffer_begin) + (*no_of_elements));
 	*no_of_elements = new_no_of_elements;
-	printf("Just for build");
 }
 
 void collapse_sale_by_date_result_buffer(int new_no_of_elements, sale_by_date_result **buffer_begin) {
@@ -77,7 +71,6 @@ void collapse_sale_by_date_result_buffer(int new_no_of_elements, sale_by_date_re
 				//terminate_system();
 		}
 
-	printf("Buffer for sale by date collapsed to %d", new_no_of_elements);
 }
 
 void collapse_company_sale_result_buffer(int new_no_of_elements, company_sale_result **buffer_begin) {
@@ -88,7 +81,6 @@ void collapse_company_sale_result_buffer(int new_no_of_elements, company_sale_re
 				//terminate_system();
 		}
 
-	printf("Buffer for company sale collapsed to %d", new_no_of_elements);
 
 }
 

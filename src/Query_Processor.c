@@ -28,7 +28,7 @@ void process_query(Query * query) {
 	} else if (query -> query_id == 3) {
 		delete_record(query);
 	} else if (query -> query_id == 4) {
-		//terminate_system();
+		terminate_odd();
 	}
 }
 
@@ -129,7 +129,6 @@ void delete_record(Query * query) {
 
 	MPI_Isend(&no_of_deleted_records, 1, MPI_INT, my_even_partner_rank, 0, MPI_COMM_WORLD, &request);
 	MPI_Wait(&request, MPI_STATUS_IGNORE);
-	//printf("Process: %d: Deletes Records : %d\n", my_rank, no_of_deleted_records);
 }
 
 
@@ -177,20 +176,19 @@ void company_sale() {
 
 void print_sale(sale_by_date_result * result_begin, int used_temp_buffer_size) {
 	printf("\nSale By Date Result\n");
-	printf("YMD\tTotal\n");
+	printf("YMD            Total\n");
 	int i;
 	for (i = 0; i != used_temp_buffer_size; ++i) {
-		printf("%d/%d/%d %f\n", result_begin[i].year, result_begin[i].month, result_begin[i].day, result_begin[i].sales_total);
+		printf("%d/%d/%d      %f\n", result_begin[i].year, result_begin[i].month, result_begin[i].day, result_begin[i].sales_total);
 	}
 }
 
 void print_company_name(company_sale_result * result_begin, int used_temp_buffer_size) {
-	//printf("Process: %d\n", my_rank);
 	printf("\nCompany Sale Result\n");
-	printf("Company Name  Total\n");
+	printf("Company Name             Total\n");
 	int i;
 	for (i = 0; i != used_temp_buffer_size; ++i) {
-		printf("%d %d %s %f\n", my_rank, result_begin[i].company_id, result_begin[i].company_name, result_begin[i].sales_total);
+		printf("%s                     %f\n", result_begin[i].company_name, result_begin[i].sales_total);
 	}
 }
 
@@ -216,5 +214,9 @@ int compare_dates(short unsigned int lhs_year, short unsigned int lhs_month, sho
 			}
 		}
 	}
+}
+
+void terminate_odd() {
+	terminate_DB();
 }
 

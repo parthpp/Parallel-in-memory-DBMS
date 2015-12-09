@@ -19,7 +19,6 @@ void get_input(Query * new_query) {
 	//system("clear");
 	get_menu();
 	new_query -> query_id = get_int_input(stdin,1,10);
-	printf("%d", new_query -> query_id);
 
 	if (new_query -> query_id == 1 || new_query -> query_id == 4) {
 		return;
@@ -47,7 +46,7 @@ void get_input(Query * new_query) {
 }
 
 void get_menu() {
-	printf("Parallel DBMS Main Menu\n"
+	printf("\nParallel DBMS Main Menu\n"
 			"\t1. Company Sale\n"
 			"\t2. Sales By Date\n"
 			"\t3. Delete By Date\n"

@@ -14,11 +14,8 @@
 // TODO for testing
 #include "Query_Processor.h"
 #include <stdio.h>
-void print_int_buffer(int * buffer, int length);
-void print_date_buffer(Date * buffer, int length);
 
-//int compare_dates(short unsigned int lhs_year, short unsigned int lhs_month, short unsigned int lhs_day,
-	//	short unsigned int rhs_year, short unsigned int rhs_month, short unsigned int rhs_day);
+
 
 void parallel_bucket_sort_company_sale(company_sale_result *my_partner_result, unsigned long my_partner_result_no_of_elements,
 		company_sale_result **query_result, unsigned long * query_result_size) {
@@ -28,100 +25,33 @@ void parallel_bucket_sort_company_sale(company_sale_result *my_partner_result, u
 	// First Sort the result obtained from the odd partner
 	qsort(my_partner_result, my_partner_result_no_of_elements, sizeof(company_sale_result), compare_company_sale_result);
 
-//	if(my_rank == 0) {
-//		printf("Process: %d\n",my_rank);
-//		printf("Sorted my_partner_result\n");
-//		print_company_name(my_partner_result, my_partner_result_no_of_elements);
-//	}
 	calculate_company_sale_split_points(my_partner_result, my_partner_result_no_of_elements);
 
-//	if (my_rank == 0) {
-//		printf("Process: %d\n", my_rank);
-//		printf("Split_Points\n");
-//		print_int_buffer(split_points, even_communicator_world_size);
-//	}
 	calculate_cs_split_points_index(my_partner_result, my_partner_result_no_of_elements);
 
-
-//	if (my_rank == 0) {
-//		printf("Process: %d\n", my_rank);
-//		printf("Split_Points_index\n");
-//		print_int_buffer(split_points_index, even_communicator_world_size);
-//	}
 	calculate_cs_work_division();
-
-
-//	if (my_rank == 0) {
-//		printf("Process: %d\n", my_rank);
-//		printf("work_division\n");
-//		print_int_buffer(work_division, even_communicator_world_size);
-//	}
 
 	get_int_buffer(even_communicator_world_size, &my_work_size);
 
 	MPI_Alltoall(work_division, 1, MPI_INT, my_work_size, 1, MPI_INT, EVEN_COMMUNICATOR);
 
-
-//	if (my_rank == 0) {
-//		printf("Process: %d\n", my_rank);
-//		printf("my_work_size\n");
-//		print_int_buffer(my_work_size, even_communicator_world_size);
-//	}
 	get_cs_query_result_size(query_result_size);
 
-	//printf("Query Result size : %d\n", *query_result_size);
 	get_company_sale_result_buffer(*query_result_size, query_result, &temp_ptr);
 
 	calculate_cs_send_displacement();
 
-//	if (my_rank == 0) {
-//		printf("Process: %d\n", my_rank);
-//		printf("send_displacement\n");
-//		print_int_buffer(send_displacement, even_communicator_world_size);
-//	}
 	calculate_cs_receive_displacement();
-
-
-//	if (my_rank == 0) {
-//		printf("Process: %d\n", my_rank);
-//		printf("receive_displacement\n");
-//		print_int_buffer(receive_displacement, even_communicator_world_size);
-//	}
 
 	get_company_sale_result_MPI_Type(&csr_mpi_type);
 
 	MPI_Alltoallv(my_partner_result, work_division, send_displacement, csr_mpi_type, *query_result,
 			my_work_size, receive_displacement, csr_mpi_type, EVEN_COMMUNICATOR);
 
-//	if (my_rank == 0) {
-//		printf("Process: %d\n", my_rank);
-//		printf("Received Result\n");
-//		print_company_name(*query_result, *query_result_size);
-//	}
 	qsort(*query_result, *query_result_size, sizeof(company_sale_result), compare_company_sale_result);
-//
-//	if (my_rank == 0) {
-//		printf("Process: %d\n", my_rank);
-//		printf("Sorted Result\n");
-//		print_company_name(*query_result, *query_result_size);
-//	}
 }
 
-void print_int_buffer(int * buffer, int length) {
-	int i;
-	printf("Process: %d\n", my_rank);
-	for (i = 0; i != length; ++i) {
-		printf("%d\n", buffer[i]);
-	}
-}
 
-void print_date_buffer(Date * buffer, int length) {
-	int i;
-	printf("Process: %d\n", my_rank);
-	for (i = 0; i != length; ++i) {
-		printf("%d/%d/%d\n", buffer[i].year, buffer[i].month, buffer[i].day);
-	}
-}
 int compare_company_sale_result(const void * lhs, const void *rhs) {
 	unsigned long lhs_id = ((company_sale_result *)lhs) -> company_id;
 	unsigned long rhs_id = ((company_sale_result *)rhs) -> company_id;
@@ -228,84 +158,31 @@ void parallel_bucket_sort_sale_by_date(Query query, sale_by_date_result *my_part
 	// First Sort the result obtained from the odd partner
 	qsort(my_partner_result, my_partner_result_no_of_elements, sizeof(sale_by_date_result), compare_sale_by_date_result);
 
-//	if(my_rank == 0) {
-//		printf("Process: %d\n",my_rank);
-//		printf("Sorted my_partner_result\n");
-//		print_sale(my_partner_result, my_partner_result_no_of_elements);
-//	}
-
 	calculate_sale_by_date_split_points(&query, my_partner_result, my_partner_result_no_of_elements);
 
-//	if (my_rank == 0) {
-//		printf("Process: %d\n", my_rank);
-//		printf("Split_Points\n");
-//		print_date_buffer(split_points_sbd, even_communicator_world_size);
-//	}
 	calculate_sbd_split_points_index(my_partner_result, my_partner_result_no_of_elements);
 
-
-//	if (my_rank == 0) {
-//		printf("Process: %d\n", my_rank);
-//		printf("Split_Points_index\n");
-//		print_int_buffer(split_points_index, even_communicator_world_size);
-//	}
 	calculate_cs_work_division();
-
-
-//	if (my_rank == 0) {
-//		printf("Process: %d\n", my_rank);
-//		printf("work_division\n");
-//		print_int_buffer(work_division, even_communicator_world_size);
-//	}
 
 	get_int_buffer(even_communicator_world_size, &my_work_size);
 
 	MPI_Alltoall(work_division, 1, MPI_INT, my_work_size, 1, MPI_INT, EVEN_COMMUNICATOR);
 
-
-//	if (my_rank == 0) {
-//		printf("Process: %d\n", my_rank);
-//		printf("my_work_size\n");
-//		print_int_buffer(my_work_size, even_communicator_world_size);
-//	}
 	get_cs_query_result_size(query_result_size);
 
-	//printf("Query Result size : %d\n", *query_result_size);
 	get_sale_by_date_result_buffer(*query_result_size, query_result, &temp_ptr);
 
 	calculate_cs_send_displacement();
 
-//	if (my_rank == 0) {
-//		printf("Process: %d\n", my_rank);
-//		printf("send_displacement\n");
-//		print_int_buffer(send_displacement, even_communicator_world_size);
-//	}
 	calculate_cs_receive_displacement();
-
-
-//	if (my_rank == 0) {
-//		printf("Process: %d\n", my_rank);
-//		printf("receive_displacement\n");
-//		print_int_buffer(receive_displacement, even_communicator_world_size);
-//	}
 
 	get_sale_by_date_result_MPI_Type(&sbd_mpi_type);
 
 	MPI_Alltoallv(my_partner_result, work_division, send_displacement, sbd_mpi_type, *query_result,
 			my_work_size, receive_displacement, sbd_mpi_type, EVEN_COMMUNICATOR);
 
-//	if (my_rank == 0) {
-//		printf("Process: %d\n", my_rank);
-//		printf("Received Result\n");
-//		print_sale(*query_result, *query_result_size);
-//	}
 	qsort(*query_result, *query_result_size, sizeof(sale_by_date_result), compare_sale_by_date_result);
-//
-//	if (my_rank == 0) {
-//		printf("Process: %d\n", my_rank);
-//		printf("Sorted Result\n");
-//		print_sale(*query_result, *query_result_size);
-//	}
+
 }
 
 void calculate_sbd_split_points_index (sale_by_date_result * my_partner_result, unsigned long my_partner_result_no_of_elements) {

@@ -37,5 +37,6 @@ int record_count_per_read;			// Random value generated between read_max and 10
 
 void set_up_data_driver(int record_read_value);
 void insert_data();
+void terminate_DB();
 
 #endif /* DBDATADRIVER_H_ */

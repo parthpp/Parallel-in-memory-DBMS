@@ -14,8 +14,8 @@
 #include <signal.h>
 #include "Query_Processor.h"
 
-void set_odd_process_structures() {
-	int read_per_round = 1000;
+void set_odd_process_structures(int read_record_per_count) {
+	int read_per_round = read_record_per_count;
 	my_even_partner_rank = my_rank - 1;
 	read_pending = 0;
 	if (signal(SIGALRM, signal_handler) == SIG_ERR) {
@@ -28,7 +28,7 @@ void set_odd_process_structures() {
 	set_up_data_driver(read_per_round);
 }
 
-void start_odd_process() {
+void start_odd_process(int read_record_per_count) {
 
 	//TODO This is temporary
 
@@ -41,7 +41,7 @@ void start_odd_process() {
 		return;
 	}
 
-	set_odd_process_structures();
+	set_odd_process_structures(read_record_per_count);
 
 	//TODO Enter User Argument here
 	//set_up_data_driver(100);
@@ -55,15 +55,13 @@ void start_odd_process() {
 		if (!flag) {
 			MPI_Test(&request, &flag, &status);
 		} else {
-			printf("Received Query ID: %d\n", user_query.query_id);
 			process_query(&user_query);
+			if (user_query.query_id == 4){
+				return;
+			}
 			MPI_Irecv(&user_query, 1, query_type, my_even_partner_rank, 0, MPI_COMM_WORLD, &request);
 			flag = 0;
 		}
-//		// TODO Remove IMportant
-//		else {
-//			break;
-//		}
 		if (read_pending) {
 			insert_data();
 			read_pending = 0;

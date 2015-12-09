@@ -19,7 +19,6 @@ void send_sbd_result(sale_by_date_result *result, int result_size) {
 	int my_id = my_rank;
 	key_t key;
 	int shmid;
-	int shmflg;
 	int size_in_bytes;
 	void * shared_memory = (void *)0;
 	int shmflag;
@@ -29,15 +28,12 @@ void send_sbd_result(sale_by_date_result *result, int result_size) {
 	size_in_bytes = result_size * sizeof(sale_by_date_result);
 	shmflag = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH | IPC_CREAT;
 	key = (key_t)(123 + my_id);
-	printf("ftok() successful. key = %d\n", key );
 
 
 	shmid = shmget(key, size_in_bytes, shmflag);
 	if (shmid == -1) {
 		perror("Creation of shared memory failed");
 	}
-
-	printf("Process: %d is attached to shared mem with key %d\n", my_rank, key);
 
 	shared_memory = shmat(shmid, (void *)0, 0);
 
@@ -50,7 +46,6 @@ void send_sbd_result(sale_by_date_result *result, int result_size) {
 	sm_ptr = (sale_by_date_result *) shared_memory;
 	write_sbd_to_sm(result, result_size, &sm_ptr);
 
-	printf("Write Complete\n");
 	if (shmdt (shared_memory) == -1)
 	{
 		printf ("shmdt failed\n ");
@@ -72,7 +67,6 @@ void receive_sbd_from_sm(sale_by_date_result *result, int result_size) {
 	int my_id = my_rank+1;
 	key_t key;
 	int shmid;
-	int shmflg;
 	int size_in_bytes;
 	void * shared_memory = (void *)0;
 	int shmflag;
@@ -83,15 +77,11 @@ void receive_sbd_from_sm(sale_by_date_result *result, int result_size) {
 	shmflag = 0;
 
 	key = (key_t)(123 + my_id);
-	printf("ftok() successful. key = %d\n", key );
-
 
 	shmid = shmget(key, size_in_bytes, shmflag);
 	if (shmid == -1) {
 		perror("Creation of shared memory failed");
 	}
-
-	printf("Process: %d is attached to shared mem with key %d\n", my_rank, key);
 
 	shared_memory = shmat(shmid, (void *)0, 0);
 
@@ -103,8 +93,6 @@ void receive_sbd_from_sm(sale_by_date_result *result, int result_size) {
 
 	sm_ptr = (sale_by_date_result *) shared_memory;
 	read_sbd_from_sm(sm_ptr, result_size, result);
-
-	printf("read Complete\n");
 
 	if (shmctl(shmid, IPC_RMID, 0) == -1)
 	{
@@ -127,7 +115,6 @@ void send_cs_result(company_sale_result *result, int result_size) {
 	int my_id = my_rank;
 	key_t key;
 	int shmid;
-	int shmflg;
 	int size_in_bytes;
 	void * shared_memory = (void *)0;
 	int shmflag;
@@ -137,15 +124,11 @@ void send_cs_result(company_sale_result *result, int result_size) {
 	size_in_bytes = result_size * sizeof(company_sale_result);
 	shmflag = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH | IPC_CREAT;
 	key = (key_t)(123 + my_id);
-	printf("ftok() successful. key = %d\n", key );
-
 
 	shmid = shmget(key, size_in_bytes, shmflag);
 	if (shmid == -1) {
 		perror("Creation of shared memory failed");
 	}
-
-	printf("Process: %d is attached to shared mem with key %d\n", my_rank, key);
 
 	shared_memory = shmat(shmid, (void *)0, 0);
 
@@ -158,7 +141,6 @@ void send_cs_result(company_sale_result *result, int result_size) {
 	sm_ptr = (company_sale_result *) shared_memory;
 	write_cs_to_sm(result, result_size, &sm_ptr);
 
-	printf("Write Complete\n");
 	if (shmdt (shared_memory) == -1)
 	{
 		printf ("shmdt failed\n ");
@@ -179,7 +161,6 @@ void receive_cs_from_sm(company_sale_result *result, int result_size) {
 	int my_id = my_rank+1;
 	key_t key;
 	int shmid;
-	int shmflg;
 	int size_in_bytes;
 	void * shared_memory = (void *)0;
 	int shmflag;
@@ -190,15 +171,11 @@ void receive_cs_from_sm(company_sale_result *result, int result_size) {
 	shmflag = 0;
 
 	key = (key_t)(123 + my_id);
-	printf("ftok() successful. key = %d\n", key );
-
 
 	shmid = shmget(key, size_in_bytes, shmflag);
 	if (shmid == -1) {
 		perror("Creation of shared memory failed");
 	}
-
-	printf("Process: %d is attached to shared mem with key %d\n", my_rank, key);
 
 	shared_memory = shmat(shmid, (void *)0, 0);
 
@@ -210,8 +187,6 @@ void receive_cs_from_sm(company_sale_result *result, int result_size) {
 
 	sm_ptr = (company_sale_result *) shared_memory;
 	read_cs_from_sm(sm_ptr, result_size, result);
-
-	printf("read Complete\n");
 
 	if (shmctl(shmid, IPC_RMID, 0) == -1)
 	{
