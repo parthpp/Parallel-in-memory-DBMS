@@ -148,11 +148,7 @@ void get_file_details() {
 	int error_check ;
 	errno = 0;
 	int file_index;
-	if (my_even_partner_rank > 0) {
-		file_index = my_even_partner_rank - 1;
-	} else {
-		file_index = 0;
-	}
+	file_index = my_even_partner_rank/2;
 
 	file_handler = fopen(file_names[file_index], "rb");
 
